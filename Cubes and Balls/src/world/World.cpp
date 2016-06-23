@@ -11,6 +11,10 @@ void World::RemoveEntity(const shared_ptr<Entity> &entity) {
 	entities_.remove(entity);
 }
 
+void World::Tick(float time) {
+	for (shared_ptr<Entity> e : entities_) e->Tick(time);
+}
+
 forward_list<shared_ptr<Entity>> World::GetEntities() {
 	return entities_;
 }
