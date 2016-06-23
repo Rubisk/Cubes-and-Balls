@@ -1,5 +1,5 @@
-#ifndef CUBES_AND_BALLS_SRC_WORLD_ENTITY_H_
-#define CUBES_AND_BALLS_SRC_WORLD_ENTITY_H_
+#ifndef CUBES_AND_BALLS_SRC_WORLDSTATE_ENTITY_H_
+#define CUBES_AND_BALLS_SRC_WORLDSTATE_ENTITY_H_
 
 #include "glm/glm.hpp"
 
@@ -13,6 +13,8 @@ struct Orientation {
 
 class Entity {
 public:
+	virtual std::string GetModelName() { return ""; };
+
 	glm::vec3 position;
 	glm::vec3 speed;     // units/sec
 

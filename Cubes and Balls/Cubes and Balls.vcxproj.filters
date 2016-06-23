@@ -36,6 +36,9 @@
     <ClCompile Include="src\worldstate\WorldState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\renderer\ModelLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -59,7 +62,10 @@
     <ClInclude Include="src\renderer\WorldRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\world\WorldState.h">
+    <ClInclude Include="src\renderer\ModelLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\worldstate\WorldState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
