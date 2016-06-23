@@ -154,8 +154,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cubes and Balls.cpp" />
+    <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\shaders\ShaderLoader.cpp" />
+    <ClCompile Include="src\renderer\WorldRenderer.cpp" />
     <ClCompile Include="src\world\Entity.cpp" />
     <ClCompile Include="src\world\World.cpp" />
   </ItemGroup>
@@ -163,9 +165,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\renderer\Drawer.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\shaders\ShaderLoader.h" />
+    <ClInclude Include="src\renderer\WorldRenderer.h" />
     <ClInclude Include="src\world\Entity.h" />
     <ClInclude Include="src\world\World.h" />
   </ItemGroup>

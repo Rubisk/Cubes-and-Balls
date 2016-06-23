@@ -9,7 +9,7 @@ class Drawer {
 public:
 	virtual void Draw() = 0;
 
-	virtual ~Drawer() = 0;
+	virtual ~Drawer() {};
 };
 
 #endif

@@ -32,12 +32,9 @@ public:
 private:
 	size_t screenWidth_;
 	size_t screenHeight_;
-	glm::mat4 cameraMatrix_;
-	glm::mat4 projectionMatrix_;
 
 	glm::vec4 backGround_{0, 0, 0, 0};
 	std::forward_list<std::shared_ptr<Drawer>> drawers_;
-	GLint shaderProgram_;
 };
 
 #endif
