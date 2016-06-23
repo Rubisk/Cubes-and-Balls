@@ -4,21 +4,19 @@
 #include "GL/glew.h"
 
 #include "Drawer.h"
-#include "../world/World.h"
+#include "../worldstate/WorldState.h"
 
-class Camera; // TODO make a camera class
 
 class WorldRenderer :
 	public Drawer {
 public:
-	WorldRenderer(std::weak_ptr<World> world, std::weak_ptr<Camera> camera);
+	WorldRenderer(std::weak_ptr<WorldState> world);
 
 	virtual void Draw();
 
 	~WorldRenderer();
 private:
-	std::weak_ptr<World> world_;
-	std::weak_ptr<Camera> camera_;
+	std::weak_ptr<WorldState> worldState_;
 
 	GLuint shaderProgram_;
 };

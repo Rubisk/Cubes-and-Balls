@@ -1,25 +1,21 @@
-#include "World.h"
+#include "WorldState.h"
 
 using namespace std;
 using namespace glm;
 
-void World::AddEntity(const shared_ptr<Entity> &entity) {
+void WorldState::AddEntity(const shared_ptr<Entity> &entity) {
 	entities_.push_front(entity);
 }
 
-void World::RemoveEntity(const shared_ptr<Entity> &entity) {
+void WorldState::RemoveEntity(const shared_ptr<Entity> &entity) {
 	entities_.remove(entity);
 }
 
-void World::Tick(float time) {
-	for (shared_ptr<Entity> e : entities_) e->Tick(time);
-}
-
-forward_list<shared_ptr<Entity>> World::GetEntities() {
+forward_list<shared_ptr<Entity>> WorldState::GetEntities() {
 	return entities_;
 }
 
-forward_list<shared_ptr<Entity>> World::GetEntitiesInBox(const vec3 &min, const vec3 &max) {
+forward_list<shared_ptr<Entity>> WorldState::GetEntitiesInBox(const vec3 &min, const vec3 &max) {
 	forward_list<shared_ptr<Entity>> entitiesInBox;
 	for (shared_ptr<Entity> e : entities_) {
 		vec3 pos = e->position;
@@ -37,7 +33,7 @@ forward_list<shared_ptr<Entity>> World::GetEntitiesInBox(const vec3 &min, const 
 	return entitiesInBox;
 }
 
-forward_list<shared_ptr<Entity>> World::GetEntitiesInSphere(const vec3 &center, float radius) {
+forward_list<shared_ptr<Entity>> WorldState::GetEntitiesInSphere(const vec3 &center, float radius) {
 	forward_list<shared_ptr<Entity>> entitiesInSphere;
 	for (shared_ptr<Entity> e : entities_)
 		if (distance(e->position, center) <= radius)

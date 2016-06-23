@@ -7,9 +7,8 @@
 using namespace std;
 using namespace glm;
 
-WorldRenderer::WorldRenderer(weak_ptr<World> world, weak_ptr<Camera> camera) {
-	world_ = world;
-	camera_ = camera;
+WorldRenderer::WorldRenderer(weak_ptr<WorldState> world) {
+	worldState_ = world;
 	shaderProgram_ = ShaderLoader::CreateShaderProgram("src/shaders/standard.vert",
 													   "src/shaders/standard.frag");
 

@@ -13,20 +13,13 @@ struct Orientation {
 
 class Entity {
 public:
-	// Simulate <time> seconds of movement
-	// to update rotation and position according to speed.
-	virtual void Tick(float time);
-
 	glm::vec3 position;
 	glm::vec3 speed;     // units/sec
 
 	Orientation orientation;
-
 	glm::vec3 rotationAxis;
 	float rotationSpeed; // radians/sec
 
-	// Abstract base class, only use this to inherit basic 
-	// positioning properties.
 	virtual ~Entity() = 0;
 };
 

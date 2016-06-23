@@ -1,6 +1,6 @@
 #include "Game.h"
 
-#include "world/World.h"
+#include "worldstate/WorldState.h"
 #include "renderer/Renderer.h"
 
 void Game::Start() {
@@ -13,7 +13,7 @@ void Game::Start() {
 	window_ = glfwCreateWindow(800, 600, "Cubes and Balls", nullptr, nullptr);
 	glfwMakeContextCurrent(window_);
 
-	World world;
+	WorldState world;
 	Renderer renderer(800, 600);
 	// WorldRenderer worldrenderer;
 }
