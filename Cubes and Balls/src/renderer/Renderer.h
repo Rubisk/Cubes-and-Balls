@@ -13,7 +13,7 @@
 // Main object that handles drawing onto the screen. Assumes a valid OpenGL context is
 // setup for the thread upon creation. To draw, create a Drawer object and implement 
 // it's Draw function, then add it to the renderer.
-// The renderer object controls the camera and projection transformations. 
+// The renderer object controls the camera and projection transformations, and the shader program. 
 // (i.e., drawers should
 // only modify object space and world space.)
 class Renderer {

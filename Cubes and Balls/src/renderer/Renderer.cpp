@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "shaders/ShaderLoader.h"
 
 Renderer::Renderer(size_t screenWidth, size_t screenHeight) {
@@ -24,6 +26,11 @@ Renderer::~Renderer() {
 
 void Renderer::Draw() {
 	glUseProgram(shaderProgram_);
+	GLuint cameraUni = glGetUniformLocation(shaderProgram_, "camera");
+	GLuint projectionUni = glGetUniformLocation(shaderProgram_, "projection");
+	glUniformMatrix4fv(cameraUni, 1, GL_FALSE, glm::value_ptr(cameraMatrix_));
+	glUniformMatrix4fv(projectionUni, 1, GL_FALSE, glm::value_ptr(projectionMatrix_));
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(backGround_.r, backGround_.g, backGround_.b, backGround_.a);
 
