@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 
+#include "GL/glew.h"
+
 
 // Provides a Model for a renderer to draw.
 // Coordinates are precisely the size of the entity the model represents.
@@ -16,8 +18,6 @@ struct Model {
 class ModelLoader {
 public:
 	Model GetModel(const std::string &name);
-
-	~ModelLoader();
 private:
 	std::map<std::string, Model> models_;
 };

@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="Cubes and Balls.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\renderer\ModelRenderer.cpp" />
     <ClCompile Include="src\renderer\ModelLoader.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\shaders\ShaderLoader.cpp" />
@@ -167,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\renderer\Drawer.h" />
+    <ClInclude Include="src\renderer\ModelRenderer.h" />
     <ClInclude Include="src\renderer\ModelLoader.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\shaders\ShaderLoader.h" />

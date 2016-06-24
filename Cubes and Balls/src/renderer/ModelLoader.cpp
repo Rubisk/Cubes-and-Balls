@@ -14,7 +14,3 @@ Model ModelLoader::GetModel(const string &name) {
 	}
 	return models_[name];
 }
-
-
-ModelLoader::~ModelLoader() {
-}

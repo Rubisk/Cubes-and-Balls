@@ -2,6 +2,9 @@
 
 #include "worldstate/WorldState.h"
 #include "renderer/Renderer.h"
+#include "renderer/WorldRenderer.h"
+
+using namespace std;
 
 void Game::Start() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -13,9 +16,10 @@ void Game::Start() {
 	window_ = glfwCreateWindow(800, 600, "Cubes and Balls", nullptr, nullptr);
 	glfwMakeContextCurrent(window_);
 
-	WorldState world;
+	shared_ptr<WorldState> world = make_shared<WorldState>();
 	Renderer renderer(800, 600);
-	// WorldRenderer worldrenderer;
+	shared_ptr<WorldRenderer> worldRenderer = make_shared<WorldRenderer>(world);
+	renderer.AddDrawer(worldRenderer);
 }
 
 void Game::Stop() {}

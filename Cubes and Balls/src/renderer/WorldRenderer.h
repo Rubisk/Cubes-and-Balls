@@ -6,7 +6,7 @@
 #include "GL/glew.h"
 
 #include "Drawer.h"
-#include "ModelLoader.h"
+#include "ModelRenderer.h"
 #include "../worldstate/WorldState.h"
 
 
@@ -19,16 +19,9 @@ public:
 
 	~WorldRenderer();
 private:
-	struct GLEntityState;
-
-	GLEntityState GetGLEntityState_(const std::shared_ptr<Entity> &target);
-
+	ModelRenderer modelRenderer_;
 	std::weak_ptr<WorldState> worldToRender_;
-
-	std::map<std::string, std::unique_ptr<GLEntityState>> stateBuffer_;
-
 	GLuint shaderProgram_;
-	ModelLoader modelLoader_;
 };
 
 #endif

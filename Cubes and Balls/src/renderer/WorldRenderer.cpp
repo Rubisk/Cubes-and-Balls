@@ -29,14 +29,10 @@ void WorldRenderer::Draw() {
 	glUniformMatrix4fv(projectionUni, 1, GL_FALSE, value_ptr(projectionMatrix_));
 
 	for (shared_ptr<Entity> e : worldToRender->GetEntities()) {
-		// TODO setup model matrix
+		// TODO setup object matrix
 		mat4 object;
 		glUniformMatrix4fv(modelUni, 1, GL_FALSE, value_ptr(object));
-
-		GLEntityState state = GetGLEntityState_(e);
-		glBindVertexArray(state.vao);
-		glDrawElements(state.mode, state.count, GL_UNSIGNED_INT, state.location);
-		glBindVertexArray(0);
+		modelRenderer_.DrawModel(e->GetModelName());
 	}
 }
 
@@ -44,20 +40,3 @@ WorldRenderer::~WorldRenderer() {
 	glDeleteProgram(shaderProgram_);
 }
 
-struct WorldRenderer::GLEntityState {
-	GLuint vao;
-
-	GLuint mode;
-	GLuint count;
-	GLvoid* location; 
-};
-
-WorldRenderer::GLEntityState WorldRenderer::GetGLEntityState_(const shared_ptr<Entity> &target) {
-	if (!(stateBuffer_.find(target->GetModelName()) != stateBuffer_.end())) {
-		Model model = modelLoader_.GetModel(target->GetModelName());
-		// TODO load model data into a VAO and create a GLEntityState.
-		GLEntityState state;
-		stateBuffer_[target->GetModelName()] = make_unique<GLEntityState>(state);
-	}
-	return *stateBuffer_[target->GetModelName()];
-}
