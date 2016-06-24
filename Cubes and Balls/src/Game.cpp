@@ -36,6 +36,7 @@ void Game::Setup() {
 void Game::Start() {
 	while (true) {
 		renderer_->Draw();
+		glfwSwapBuffers(window_);
 		glfwPollEvents();
 	}
 }
@@ -43,6 +44,7 @@ void Game::Start() {
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
 	crate->position = glm::vec3(0.0f, 0.0f, 0.5f);
+	worldState_->AddEntity(crate);
 }
 
 void Game::Stop() {}
