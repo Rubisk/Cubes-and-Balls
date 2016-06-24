@@ -3,6 +3,7 @@
 #include "ModelRenderer.h"
 
 using namespace std;
+
 void ModelRenderer::DrawModel(const string &modelName) {
 	GLModelState state = GetGLModelState_(modelName);
 	glBindVertexArray(state.vao);

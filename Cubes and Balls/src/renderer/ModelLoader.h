@@ -19,6 +19,8 @@ class ModelLoader {
 public:
 	Model GetModel(const std::string &name);
 private:
+	void TryLoadModel_(const std::string &name);
+
 	std::map<std::string, Model> models_;
 };
 

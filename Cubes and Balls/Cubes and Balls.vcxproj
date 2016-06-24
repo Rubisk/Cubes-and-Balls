@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="res\models\Crate.model" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h" />
