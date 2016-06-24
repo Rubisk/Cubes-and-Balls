@@ -2,8 +2,6 @@
 
 layout(location = 0) in vec3 position;
 
-out vec4 myColor;
-
 uniform mat4 projection;
 uniform mat4 model;
 uniform mat4 camera;

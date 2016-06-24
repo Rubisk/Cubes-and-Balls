@@ -166,6 +166,8 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="res\models\Crate.model" />
+    <None Include="src\renderer\shaders\standard.frag" />
+    <None Include="src\renderer\shaders\standard.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h" />
