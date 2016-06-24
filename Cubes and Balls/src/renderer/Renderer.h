@@ -33,7 +33,7 @@ private:
 	size_t screenWidth_;
 	size_t screenHeight_;
 
-	glm::vec4 backGround_{0, 0, 0, 0};
+	glm::vec4 backGround_{0, 1, 0, 0};
 	std::forward_list<std::shared_ptr<Drawer>> drawers_;
 };
 
