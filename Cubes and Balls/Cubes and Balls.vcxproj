@@ -160,6 +160,7 @@
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\shaders\ShaderLoader.cpp" />
     <ClCompile Include="src\renderer\WorldRenderer.cpp" />
+    <ClCompile Include="src\worldstate\Crate.cpp" />
     <ClCompile Include="src\worldstate\WorldState.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,8 +175,9 @@
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\shaders\ShaderLoader.h" />
     <ClInclude Include="src\renderer\WorldRenderer.h" />
+    <ClInclude Include="src\worldstate\Crate.h" />
+    <ClInclude Include="src\worldstate\Entity.h" />
     <ClInclude Include="src\worldstate\WorldState.h" />
-    <ClInclude Include="src\world\Entity.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
