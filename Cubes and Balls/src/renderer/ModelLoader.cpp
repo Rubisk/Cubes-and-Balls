@@ -21,7 +21,7 @@ Model ModelLoader::GetModel(const string &name) {
 
 void ModelLoader::TryLoadModel_(const string &name) {
 	// TODO setup proper exception handling
-	string path = "src/res/" + name;
+	string path = "res/models/" + name + ".model";
 	ifstream modelData(path);
 	string line;
 
@@ -29,7 +29,9 @@ void ModelLoader::TryLoadModel_(const string &name) {
 
 	while (getline(modelData, line)) {
 		stringstream lineStream(line);
-		switch (line[0]) {
+		char first;
+		lineStream >> first;
+		switch (first) {
 		case '#':
 			continue;
 		case 'v':
