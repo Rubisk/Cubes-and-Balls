@@ -22,7 +22,7 @@ public:
 	glm::vec3 rotationAxis;
 	float rotationSpeed; // radians/sec
 
-	virtual ~Entity() = 0;
+	virtual ~Entity() {};
 };
 
 #endif

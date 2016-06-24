@@ -3,14 +3,6 @@
 Renderer::Renderer(size_t screenWidth, size_t screenHeight) {
 	screenWidth_ = screenWidth;
 	screenHeight_ = screenHeight;
-
-	glewExperimental = GL_TRUE;
-	glewInit();
-
-	glDepthFunc(GL_LESS);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
 }
 
 Renderer::~Renderer() {

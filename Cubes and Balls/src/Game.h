@@ -4,14 +4,26 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
+#include "worldstate/WorldState.h"
+#include "renderer/Renderer.h"
+#include "renderer/WorldRenderer.h"
+
 // Handles creation and deletion of a renderer, world, IO/system, and
 // is there to make sure the parts can communicate with each other.
 class Game {
 public:
+	void Setup();
+
 	void Start();
+
+	void SetupTempWorldState();
 
 	void Stop();
 private:
+	std::shared_ptr<WorldState> worldState_;
+	std::shared_ptr<Renderer> renderer_;
+	std::shared_ptr<WorldRenderer> worldRenderer_;
+
 	GLFWwindow* window_;
 };
 

@@ -9,7 +9,7 @@ public:
 	// and returns a GL shader program location.
 	// Note that responsibility for cleaning up the program is by the object calling
 	// this function.
-	static GLuint CreateShaderProgram(const GLchar* vertexPath, const GLchar* fragmentPath);
+	static GLuint CreateShaderProgram(const std::string vertexPath, const std::string fragmentPath);
 };
 
 #endif

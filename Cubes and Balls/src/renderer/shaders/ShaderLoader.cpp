@@ -8,8 +8,7 @@
 
 using namespace std;
 
-
-GLuint ShaderLoader::CreateShaderProgram(const GLchar* vertexPath, const GLchar* fragmentPath) {
+GLuint ShaderLoader::CreateShaderProgram(const string vertexPath, const string fragmentPath) {
 	cout << "Loading Shaders..." << endl;
 	string vertexCode, fragmentCode;
 	ifstream vShaderFile;
@@ -35,7 +34,6 @@ GLuint ShaderLoader::CreateShaderProgram(const GLchar* vertexPath, const GLchar*
 	}
 	const GLchar* vShaderCode = vertexCode.c_str();
 	const GLchar* fShaderCode = fragmentCode.c_str();
-
 
 	GLuint vertex, fragment;
 	GLint success;

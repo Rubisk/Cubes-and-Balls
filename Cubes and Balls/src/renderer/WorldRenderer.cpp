@@ -7,10 +7,11 @@
 using namespace std;
 using namespace glm;
 
+#include <fstream>
 WorldRenderer::WorldRenderer(const weak_ptr<WorldState> &world) {
 	worldToRender_ = world;
-	shaderProgram_ = ShaderLoader::CreateShaderProgram("src/shaders/standard.vert",
-													   "src/shaders/standard.frag");
+	shaderProgram_ = ShaderLoader::CreateShaderProgram("./src/renderer/shaders/standard.vert",
+													   "./src/renderer/shaders/standard.frag");
 
 }
 
