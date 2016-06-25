@@ -28,7 +28,7 @@ void Game::Setup() {
 	glEnable(GL_BLEND);
 
 	worldState_ = make_shared<WorldState>();
-	worldRenderer_ = make_shared<WorldRenderer>(worldState_);
+	worldRenderer_ = make_shared<WorldRenderer>(worldState_, 800.0f, 600.0f);
 	renderer_ = make_shared<Renderer>(800, 600);
 	renderer_->AddDrawer(worldRenderer_);
 }
@@ -43,7 +43,7 @@ void Game::Start() {
 
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
-	crate->position = glm::vec3(0.0f, 0.0f, 0.5f);
+	crate->position = glm::vec3(0.0f, 0.0f, -10.0f);
 	worldState_->AddEntity(crate);
 }
 
