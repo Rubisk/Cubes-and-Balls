@@ -33,7 +33,7 @@ ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(const string &target
 		GLuint vertexBuffer;
 		GLuint elementBuffer;
 
-		state.count = model.elements.size() / 3;
+		state.count = model.elements.size();
 		state.location = 0;
 		state.mode = GL_TRIANGLES;
 
