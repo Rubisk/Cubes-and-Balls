@@ -7,13 +7,19 @@
 
 class Camera {
 public:
-	void LookAt(glm::vec3 point);
+	void LookAt(const glm::vec3 &point);
 
-	void Rotate(glm::vec3 axis, float degrees);
+	// worldCoords: True if we're using world coordinates instead of view coordinates. defaults to false.
+	void Rotate(const glm::vec3 &axis, float radians);
 
-	void GoTo(glm::vec3 position);
+	void Rotate(const glm::vec3 &axis, float radians, bool worldCoords);
 
-	void Move(glm::vec3 distance);
+	void GoTo(const glm::vec3 &position);
+
+	// worldCoords: True if we're using world coordinates instead of view coordinates. defaults to false.
+	void Move(const glm::vec3 &distance);
+
+	void Move(const glm::vec3 &distance, bool worldCoords);
 
 	glm::vec3 GetPosition();
 
@@ -21,6 +27,14 @@ public:
 
 	// Returns the point the center of the camera is looking at, at <distance> away.
 	glm::vec3 GetPointLookingAt(float distance);
+
+	// Returns a matrix mapping a point in world space to the correct point in view space.
+	glm::mat4 GetViewToWorldMatrix();
+
+	// Use this to convert coordinates in camera/view-space to world space coordinates.
+	// viewPoint are some coordinates relative to the camera (0, 0, 1) is a little bit forward,
+	// (0, 1, 0) is up a bit, and returns the world coordinates representing that point.
+	glm::vec3 ViewPointToWorld(const glm::vec3 &viewPoint);
 private:
 	Orientation orientation_;
 	glm::vec3 position_;

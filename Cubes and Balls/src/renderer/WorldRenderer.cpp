@@ -18,7 +18,6 @@ WorldRenderer::WorldRenderer(const weak_ptr<WorldState> &world, float screenWidt
 	screenWidth_ = screenWidth;
 	shaderProgram_ = ShaderLoader::CreateShaderProgram("./src/renderer/shaders/standard.vert",
 													   "./src/renderer/shaders/standard.frag");
-
 }
 
 void WorldRenderer::Draw() {
@@ -31,11 +30,9 @@ void WorldRenderer::Draw() {
 	GLuint cameraUni = glGetUniformLocation(shaderProgram_, "camera");
 	GLuint projectionUni = glGetUniformLocation(shaderProgram_, "projection");
 
-	mat4 cameraMatrix = lookAt(worldToRender->camera.GetPosition(),
-							   worldToRender->camera.GetPosition() + worldToRender->camera.GetOrientation().frontSide,
-							   worldToRender->camera.GetOrientation().upSide);
+	mat4 cameraMatrix = inverse(worldToRender->camera.GetViewToWorldMatrix());
+	mat4 projectionMatrix = perspective(pi<float>() / 3, screenWidth_ / screenHeight_, 0.1f, 100.0f);
 
-	mat4 projectionMatrix = perspective(pi<float>() / 2, screenWidth_ / screenHeight_, 0.1f, 100.0f);
 	glUniformMatrix4fv(cameraUni, 1, GL_FALSE, value_ptr(cameraMatrix));
 	glUniformMatrix4fv(projectionUni, 1, GL_FALSE, value_ptr(projectionMatrix));
 
