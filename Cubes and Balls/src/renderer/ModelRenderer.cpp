@@ -27,7 +27,7 @@ ModelRenderer::~ModelRenderer() {
 }
 
 ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(const string &target) {
-	if (!(stateBuffer_.find(target) != stateBuffer_.end())) {
+	if (stateBuffer_.find(target) == stateBuffer_.end()) {
 		Model model = modelLoader_.GetModel(target);
 		GLModelState state;
 		GLuint vertexBuffer;
