@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "InputHandler.h"
 
 #include "worldstate/WorldState.h"
 #include "worldstate/Crate.h"
@@ -32,6 +33,11 @@ void Game::Setup() {
 	worldRenderer_ = make_shared<WorldRenderer>(worldState_, 800.0f, 600.0f);
 	renderer_ = make_shared<Renderer>(800, 600);
 	renderer_->AddDrawer(worldRenderer_);
+
+	glfwSetWindowUserPointer(window_, this);
+	
+	glfwSetKeyCallback(window_, static_cast<GLFWkeyfun>(InputHandler::KeyInput));
+	glfwSetMouseButtonCallback(window_, static_cast<GLFWmousebuttonfun>(InputHandler::MouseButtonInput));
 }
 
 void Game::Start() {
@@ -44,10 +50,10 @@ void Game::Start() {
 
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
-	crate->position = vec3(5.0f, 1.0f, 3.0f);
+	crate->position = vec3(20.0f, 20.0f, 20.0f);
 	worldState_->AddEntity(crate);
 	worldState_->camera.GoTo(vec3(0, 0, 0));
-	worldState_->camera.LookAt(vec3(5, 1, 3));
+	worldState_->camera.LookAt(vec3(20, 20, 20));
 }
 
 void Game::Stop() {}

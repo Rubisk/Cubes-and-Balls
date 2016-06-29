@@ -20,6 +20,8 @@ public:
 
 	void Stop();
 private:
+	friend class InputHandler;
+
 	std::shared_ptr<WorldState> worldState_;
 	std::shared_ptr<Renderer> renderer_;
 	std::shared_ptr<WorldRenderer> worldRenderer_;
