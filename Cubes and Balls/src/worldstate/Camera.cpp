@@ -29,8 +29,6 @@ void Camera::Rotate(const vec3 &axis, float radians) {
 	Rotate(axis, radians, false);
 }
 
-#include <iostream>
-#include "glm/gtx/io.hpp"
 void Camera::Rotate(const vec3 &axis, float radians, bool worldCoords) {
 	if (worldCoords) {
 		orientation_.frontSide = rotate(orientation_.frontSide, radians, axis);
