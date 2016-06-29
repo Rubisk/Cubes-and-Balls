@@ -12,9 +12,6 @@ struct Orientation {
 
 	// Rotate an orientation along axis
 	void Rotate(const glm::vec3 &axis, float degrees);
-
-	// Returns the rotation matrix that will map (0, 0, 1) to frontSide and (0, 1, 0) to upSide.
-	glm::mat4 GetRotationMatrix();
 };
 
 #endif

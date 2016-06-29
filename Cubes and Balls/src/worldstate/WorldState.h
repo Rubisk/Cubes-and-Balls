@@ -11,7 +11,7 @@
 // for anything that is part of the world our game is simulating.
 class WorldState {
 public:
-	std::shared_ptr<Camera> camera;
+	Camera camera;
 
 	void AddEntity(const std::shared_ptr<Entity> &entity);
 

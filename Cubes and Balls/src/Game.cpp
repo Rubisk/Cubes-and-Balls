@@ -6,6 +6,7 @@
 #include "renderer/WorldRenderer.h"
 
 using namespace std;
+using namespace glm;
 
 void Game::Setup() {
 	if (!glfwInit()) throw std::runtime_error("GLFW failed to initialize");
@@ -43,8 +44,10 @@ void Game::Start() {
 
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
-	crate->position = glm::vec3(0.0f, 0.0f, -10.0f);
+	crate->position = vec3(5.0f, 1.0f, 3.0f);
 	worldState_->AddEntity(crate);
+	worldState_->camera.GoTo(vec3(0, 0, 0));
+	worldState_->camera.LookAt(vec3(5, 1, 3));
 }
 
 void Game::Stop() {}
