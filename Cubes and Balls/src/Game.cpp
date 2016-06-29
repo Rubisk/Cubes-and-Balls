@@ -34,7 +34,7 @@ void Game::Setup() {
 }
 
 void Game::Start() {
-	while (true) {
+	while (!glfwWindowShouldClose(window_)) {
 		renderer_->Draw();
 		glfwSwapBuffers(window_);
 		glfwPollEvents();
