@@ -28,6 +28,7 @@ void ModelLoader::TryLoadModel_(const string &name) {
 	Model model;
 
 	while (getline(modelData, line)) {
+		if (line == "") continue;
 		stringstream lineStream(line);
 		char first;
 		lineStream >> first;
@@ -36,20 +37,25 @@ void ModelLoader::TryLoadModel_(const string &name) {
 			continue;
 		case 'v':
 		{
-			GLfloat x, y, z;
-			lineStream >> x >> y >> z;
+			// x, y, z are the position, nx, ny, nz are the normal vertex.
+			GLfloat x, y, z, nx, ny, nz;
+			lineStream >> x >> y >> z >> nx >> ny >> nz;
 			model.vertices.push_back(x);
 			model.vertices.push_back(y);
 			model.vertices.push_back(z);
+			model.vertices.push_back(nx);
+			model.vertices.push_back(ny);
+			model.vertices.push_back(nz);
 			break;
 		}
-		case 'e':
+		case 'f':
 		{
-			GLuint x, y, z;
-			lineStream >> x >> y >> z;
-			model.elements.push_back(x);
-			model.elements.push_back(y);
-			model.elements.push_back(z);
+			// A face is represented by 3 vertices in clock-wise order.
+			GLuint f1, f2, f3;
+			lineStream >> f1 >> f2 >> f3;
+			model.elements.push_back(f1);
+			model.elements.push_back(f2);
+			model.elements.push_back(f3);
 			break;
 		}
 		default:

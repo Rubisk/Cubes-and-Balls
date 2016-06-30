@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "../worldstate/Entity.h"
-#include "ModelLoader.h"
+#include "../ModelLoader.h"
 
 class ModelRenderer {
 public:
