@@ -50,9 +50,11 @@ ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(const string &target
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, model.elements.size() * sizeof(GLuint), &model.elements[0], GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, model.vertices.size() * sizeof(GLfloat), &model.vertices[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*) 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (GLvoid*) 0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (GLvoid*) 3);
 
 		glBindVertexArray(0);
 
