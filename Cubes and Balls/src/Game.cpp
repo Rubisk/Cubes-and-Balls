@@ -50,10 +50,13 @@ void Game::Start() {
 
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
-	crate->position = vec3(20.0f, 20.0f, 20.0f);
+	shared_ptr<Crate> crate2 = make_shared<Crate>();
+	crate->position = vec3(1.0, 0.0f, 0.0f);
+	crate2->position = vec3(0.5f, 0.2f, 0.3f);
 	worldState_->AddEntity(crate);
+	worldState_->AddEntity(crate2);
 	worldState_->camera.GoTo(vec3(0, 0, 0));
-	worldState_->camera.LookAt(vec3(20, 20, 20));
+	worldState_->camera.LookAt(vec3(1, 0, 0));
 }
 
 void Game::Stop() {}
