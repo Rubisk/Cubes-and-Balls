@@ -19,6 +19,8 @@ public:
 
 	glm::vec3 GetFrontSide();
 private:
+	void WriteUpFrontSide(glm::vec3 frontSide, glm::vec3 upSide);
+
 	glm::vec3 frontSide_ = glm::vec3(0, 0, 1);
 	glm::vec3 upSide_ = glm::vec3(0, 1, 0);
 

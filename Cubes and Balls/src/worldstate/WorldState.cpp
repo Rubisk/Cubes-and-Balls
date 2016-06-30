@@ -18,7 +18,7 @@ forward_list<shared_ptr<Entity>> WorldState::GetEntities() {
 forward_list<shared_ptr<Entity>> WorldState::GetEntitiesInBox(const vec3 &min, const vec3 &max) {
 	forward_list<shared_ptr<Entity>> entitiesInBox;
 	for (shared_ptr<Entity> e : entities_) {
-		vec3 pos = e->position;
+		vec3 pos = e->GetPosition();
 		bool inBox = true;
 		for (int i = 0; i < 3; i++) {
 			float minc = (min[i] < max[i]) ? min[i] : max[i];
@@ -36,7 +36,7 @@ forward_list<shared_ptr<Entity>> WorldState::GetEntitiesInBox(const vec3 &min, c
 forward_list<shared_ptr<Entity>> WorldState::GetEntitiesInSphere(const vec3 &center, float radius) {
 	forward_list<shared_ptr<Entity>> entitiesInSphere;
 	for (shared_ptr<Entity> e : entities_)
-		if (distance(e->position, center) <= radius)
+		if (distance(e->GetPosition(), center) <= radius)
 			entitiesInSphere.push_front(e);
 	return entitiesInSphere;
 }

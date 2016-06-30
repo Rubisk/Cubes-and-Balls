@@ -45,7 +45,7 @@ void WorldRenderer::Draw() {
 						   vec4(up, 0),
 						   vec4(front, 0),
 						   vec4(0, 0, 0, 1));
-		object = translate(object, e->position);
+		object = translate(object, e->GetPosition());
 		glUniformMatrix4fv(modelUni, 1, GL_FALSE, value_ptr(object));
 		modelRenderer_.DrawModel(e->GetModelName());
 	}

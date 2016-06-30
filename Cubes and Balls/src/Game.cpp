@@ -51,8 +51,8 @@ void Game::Start() {
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
 	shared_ptr<Crate> crate2 = make_shared<Crate>();
-	crate->position = vec3(1.0, 0.0f, 0.0f);
-	crate2->position = vec3(0.5f, 0.2f, 0.3f);
+	crate->SetPosition(vec3(1.0, 0.0f, 0.0f));
+	crate2->SetPosition(vec3(0.5f, 0.2f, 0.3f));
 	crate2->orientation.Rotate(vec3(0, 0, 1), 3.1415f / 5.0f);
 	crate2->orientation.Rotate(vec3(0, 1, 0), 3.1415f / 5.0f);
 	worldState_->AddEntity(crate);
