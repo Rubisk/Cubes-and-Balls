@@ -7,12 +7,21 @@
 // frontSide is the way (0, 0, 1) is pointing, upSide is the way 
 // (0, 1, 0) is pointing. This represents a unique orientation.
 struct Orientation {
-
-	glm::vec3 frontSide = glm::vec3(0, 0, 1);
-	glm::vec3 upSide = glm::vec3(0, 1, 0);
-
+public:
 	// Rotate an orientation along axis
-	void Rotate(const glm::vec3 &axis, float degrees);
+	void Rotate(const glm::vec3 &axis, float radians);
+
+	void SetUpSide(const glm::vec3 &upSide);
+
+	void SetFrontSide(const glm::vec3 &frontSide);
+
+	glm::vec3 GetUpSide();
+
+	glm::vec3 GetFrontSide();
+private:
+	glm::vec3 frontSide_ = glm::vec3(0, 0, 1);
+	glm::vec3 upSide_ = glm::vec3(0, 1, 0);
+
 };
 
 #endif

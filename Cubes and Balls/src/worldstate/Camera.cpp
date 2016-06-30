@@ -11,18 +11,7 @@ using namespace glm;
 
 void Camera::LookAt(const vec3 &point) {
 	vec3 facing = point - position_;
-	orientation_.frontSide = normalize(facing);
-
-	// Up must be orthogonal to facing. If they're in the same 1-dimensional subspace, we 
-	// reset up to either (0, 1, 0) or (0, 0, 1).
-	if (distance(normalize(orientation_.frontSide), normalize(orientation_.upSide)) < 0.00001 ||
-		distance(normalize(orientation_.frontSide), -normalize(orientation_.upSide)) < 0.00001) {
-		orientation_.upSide = (-0.5 < orientation_.frontSide.y && orientation_.frontSide.y < 0.5)
-			? vec3(0, 1, 0) : vec3(1, 0, 0);
-	}
-	else {
-		orientation_.upSide = normalize(orientation_.upSide - dot(orientation_.upSide, orientation_.frontSide) * orientation_.frontSide);
-	}
+	orientation_.SetFrontSide(facing);
 }
 
 void Camera::Rotate(const vec3 &axis, float radians) {
@@ -31,13 +20,11 @@ void Camera::Rotate(const vec3 &axis, float radians) {
 
 void Camera::Rotate(const vec3 &axis, float radians, bool worldCoords) {
 	if (worldCoords) {
-		orientation_.frontSide = rotate(orientation_.frontSide, radians, axis);
-		orientation_.upSide = rotate(orientation_.upSide, radians, axis);
+		orientation_.Rotate(axis, radians);
 	}
 	else {
 		vec3 worldAxis = vec3(GetViewToWorldMatrix() * vec4(axis, 0));
-		orientation_.frontSide = rotate(orientation_.frontSide, radians, worldAxis);
-		orientation_.upSide = rotate(orientation_.upSide, radians, worldAxis);
+		orientation_.Rotate(worldAxis, radians);
 	}
 }
 
@@ -68,12 +55,12 @@ Orientation Camera::GetOrientation() {
 }
 
 vec3 Camera::GetPointLookingAt(float distance) {
-	return position_ + distance * orientation_.frontSide;
+	return position_ + distance * orientation_.GetFrontSide();
 }
 
 mat4 Camera::GetViewToWorldMatrix() {
-	vec3 up = orientation_.upSide;
-	vec3 front = orientation_.frontSide;
+	vec3 up = orientation_.GetUpSide();
+	vec3 front = orientation_.GetFrontSide();
 	vec3 right = cross(front, up);
 	return mat4(vec4(right, 0),
 				vec4(up, 0),
