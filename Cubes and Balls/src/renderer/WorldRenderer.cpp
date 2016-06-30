@@ -38,7 +38,14 @@ void WorldRenderer::Draw() {
 
 	for (shared_ptr<Entity> e : worldToRender->GetEntities()) {
 		// TODO setup object matrix
-		mat4 object = translate(mat4(), e->position);
+		vec3 up = e->orientation.GetUpSide();
+		vec3 front = e->orientation.GetFrontSide();
+		assert(up == normalize(up));
+		mat4 object = mat4(vec4(normalize(cross(up, front)), 0),
+						   vec4(up, 0),
+						   vec4(front, 0),
+						   vec4(0, 0, 0, 1));
+		object = translate(object, e->position);
 		glUniformMatrix4fv(modelUni, 1, GL_FALSE, value_ptr(object));
 		modelRenderer_.DrawModel(e->GetModelName());
 	}
