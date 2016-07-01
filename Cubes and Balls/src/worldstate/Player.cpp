@@ -6,9 +6,6 @@
 
 using namespace glm;
 
-// This file assumes the two vectors in orientation_ are always orthogonal.
-// Upon changing them, please KEEP THIS PROPERTY.
-
 void Player::LookAt(const vec3 &point) {
 	vec3 facing = point - GetPosition();
 	SetFrontSide(facing);
