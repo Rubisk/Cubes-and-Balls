@@ -17,9 +17,11 @@ public:
 
 	void SetFrontSide(const glm::vec3 &frontSide);
 
-	glm::vec3 GetUpSide() const;
+	virtual glm::vec3 GetUpSide() const;
 
-	glm::vec3 GetFrontSide() const;
+	virtual glm::vec3 GetFrontSide() const;
+
+	virtual ~Orientation();
 private:
 	void WriteUpFrontSide(glm::vec3 frontSide, glm::vec3 upSide);
 

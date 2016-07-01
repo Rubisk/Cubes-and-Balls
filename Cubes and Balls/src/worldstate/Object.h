@@ -8,17 +8,16 @@
 #include "Orientation.h"
 
 // This class and it's access functions are all thread-safe.
-class Object {
+class Object :
+	public Orientation {
 public:
-	Orientation orientation;
-
 	virtual std::string GetModelName();
 
 	virtual glm::vec3 GetModelScale();
 
-	glm::vec3 GetPosition() const;
+	virtual glm::vec3 GetPosition() const;
 
-	void SetPosition(const glm::vec3 &position);
+	virtual void SetPosition(const glm::vec3 &position);
 
 	virtual ~Object();
 private:

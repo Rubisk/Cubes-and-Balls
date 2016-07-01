@@ -38,8 +38,8 @@ void WorldRenderer::Draw() {
 
 	for (shared_ptr<Object> o : worldToRender->GetEntities()) {
 		// TODO setup object matrix
-		vec3 up = o->orientation.GetUpSide();
-		vec3 front = o->orientation.GetFrontSide();
+		vec3 up = o->GetUpSide();
+		vec3 front = o->GetFrontSide();
 		assert(up == normalize(up));
 		mat4 object = mat4(vec4(normalize(cross(up, front)), 0),
 						   vec4(up, 0),
