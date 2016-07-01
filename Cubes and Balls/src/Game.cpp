@@ -57,8 +57,8 @@ void Game::SetupTempWorldState() {
 	crate2->Rotate(vec3(0, 1, 0), 3.1415f / 5.0f);
 	worldState_->AddEntity(crate);
 	worldState_->AddEntity(crate2);
-	worldState_->camera.SetPosition(vec3(0, 0, 0));
-	worldState_->camera.LookAt(vec3(1, 0, 0));
+	worldState_->player->SetPosition(vec3(0, 0, 0));
+	worldState_->player->LookAt(vec3(1, 0, 0));
 }
 
 void Game::Stop() {}

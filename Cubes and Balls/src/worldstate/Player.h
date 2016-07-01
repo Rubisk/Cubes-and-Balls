@@ -2,29 +2,26 @@
 #define CUBE_AND_BALLS_SRC_CAMERA_H_
 
 #include "glm/glm.hpp"
-#include "Object.h"
+#include "Entity.h"
 
 
-class Camera :
-	public Object {
+class Player :
+	public Entity {
 public:
 	void LookAt(const glm::vec3 &point);
 
-	// worldCoords: True if we're using world coordinates instead of view coordinates. defaults to false.
-	virtual void Rotate(const glm::vec3 &axis, float radians);
+	// Use this to rotate using local-coordinate space arguments
+	virtual void RotateLocal(const glm::vec3 &axis, float radians);
 
-	virtual void Rotate(const glm::vec3 &axis, float radians, bool worldCoords);
+	virtual void MoveLocal(const glm::vec3 &distance);
 
-	// worldCoords: True if we're using world coordinates instead of view coordinates. defaults to false.
-	virtual void Move(const glm::vec3 &distance);
-
-	virtual void Move(const glm::vec3 &distance, bool worldCoords);
+	virtual float GetWeight();
 
 	// Returns the point the center of the camera is looking at, at <distance> away.
 	glm::vec3 GetPointLookingAt(float distance) const;
 
 	// Returns a matrix mapping a point in world space to the correct point in view space.
-	glm::mat4 GetViewToWorldMatrix() const;
+	glm::mat4 LocalToWorldSpaceMatrix() const;
 
 	// Use this to convert coordinates in camera/view-space to world space coordinates.
 	// viewPoint are some coordinates relative to the camera (0, 0, 1) is a little bit forward,

@@ -33,6 +33,17 @@ void Object::Move(const glm::vec3 & distance) {
 	SetPosition(GetPosition() + distance);
 }
 
+mat4 Object::GetLocalToWorldSpaceMatrix() const {
+	vec3 up = GetUpSide();
+	vec3 front = GetFrontSide();
+	vec3 right = cross(front, up);
+	return mat4(vec4(right, 0),
+				vec4(up, 0),
+				vec4(-front, 0),
+				vec4(GetPosition(), 1));
+}
+
+
 Object::~Object() {
 }
 

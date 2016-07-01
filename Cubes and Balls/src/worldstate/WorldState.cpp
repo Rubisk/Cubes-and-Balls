@@ -3,6 +3,12 @@
 using namespace std;
 using namespace glm;
 
+WorldState::WorldState() {
+	player = make_shared<Player>();
+	entities_.push_front(player);
+	objects_.push_front(player);
+}
+
 void WorldState::AddEntity(const shared_ptr<Entity> &entity) {
 	entities_.push_front(entity);
 	objects_.push_front(entity);

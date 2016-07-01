@@ -5,13 +5,15 @@
 #include <memory>
 
 #include "Entity.h"
-#include "Camera.h"
+#include "Player.h"
 
 // Main object used to provide a general interface
 // for anything that is part of the world our game is simulating.
 class WorldState {
 public:
-	Camera camera;
+	WorldState();
+
+	std::shared_ptr<Player> player;
 
 	void AddEntity(const std::shared_ptr<Entity> &entity);
 

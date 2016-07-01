@@ -30,7 +30,7 @@ void WorldRenderer::Draw() {
 	GLuint cameraUni = glGetUniformLocation(shaderProgram_, "camera");
 	GLuint projectionUni = glGetUniformLocation(shaderProgram_, "projection");
 
-	mat4 cameraMatrix = inverse(worldToRender->camera.GetViewToWorldMatrix());
+	mat4 cameraMatrix = inverse(worldToRender->player->LocalToWorldSpaceMatrix());
 	mat4 projectionMatrix = perspective(pi<float>() / 3, screenWidth_ / screenHeight_, 0.1f, 100.0f);
 
 	glUniformMatrix4fv(cameraUni, 1, GL_FALSE, value_ptr(cameraMatrix));
