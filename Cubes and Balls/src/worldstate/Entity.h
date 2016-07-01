@@ -14,17 +14,17 @@ class Entity :
 public:
 	virtual float GetWeight() const;
 
-	glm::vec3 GetSpeed() const;
+	virtual glm::vec3 GetSpeed() const;
 
-	void SetSpeed(const glm::vec3 &speed);
+	virtual void SetSpeed(const glm::vec3 &speed);
 
-	glm::vec3 GetRotationAxis() const;
+	virtual glm::vec3 GetRotationAxis() const;
 
-	void SetRotationAxis(const glm::vec3 &axis);
+	virtual void SetRotationAxis(const glm::vec3 &axis);
 
-	float GetRotationSpeed() const;
+	virtual float GetRotationSpeed() const;
 
-	void SetRotationSpeed(float radians);
+	virtual void SetRotationSpeed(float radians);
 
 	virtual ~Entity() {};
 private:
