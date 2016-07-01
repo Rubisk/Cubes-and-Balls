@@ -158,6 +158,7 @@
     <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\ModelLoader.cpp" />
     <ClCompile Include="src\physics\PhysicsEngine.cpp" />
+    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\renderer\ModelRenderer.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\shaders\ShaderLoader.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="src\InputHandler.h" />
     <ClInclude Include="src\ModelLoader.h" />
     <ClInclude Include="src\physics\PhysicsEngine.h" />
+    <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\renderer\Drawer.h" />
     <ClInclude Include="src\renderer\ModelRenderer.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
