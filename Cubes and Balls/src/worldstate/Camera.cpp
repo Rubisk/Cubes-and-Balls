@@ -46,19 +46,19 @@ void Camera::Move(const vec3 &distance, bool worldCoords) {
 	}
 }
 
-vec3 Camera::GetPosition() {
+vec3 Camera::GetPosition() const {
 	return position_;
 }
 
-Orientation Camera::GetOrientation() {
+Orientation Camera::GetOrientation() const {
 	return orientation_;
 }
 
-vec3 Camera::GetPointLookingAt(float distance) {
+vec3 Camera::GetPointLookingAt(float distance) const {
 	return position_ + distance * orientation_.GetFrontSide();
 }
 
-mat4 Camera::GetViewToWorldMatrix() {
+mat4 Camera::GetViewToWorldMatrix() const {
 	vec3 up = orientation_.GetUpSide();
 	vec3 front = orientation_.GetFrontSide();
 	vec3 right = cross(front, up);
@@ -68,6 +68,6 @@ mat4 Camera::GetViewToWorldMatrix() {
 				vec4(position_, 1));
 }
 
-vec3 Camera::ViewPointToWorld(const vec3 &viewPoint) {
+vec3 Camera::ViewPointToWorld(const vec3 &viewPoint) const {
 	return vec3(GetViewToWorldMatrix() * vec4(viewPoint + position_, 1));
 }

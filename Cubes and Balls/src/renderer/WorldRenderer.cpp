@@ -36,18 +36,18 @@ void WorldRenderer::Draw() {
 	glUniformMatrix4fv(cameraUni, 1, GL_FALSE, value_ptr(cameraMatrix));
 	glUniformMatrix4fv(projectionUni, 1, GL_FALSE, value_ptr(projectionMatrix));
 
-	for (shared_ptr<Entity> e : worldToRender->GetEntities()) {
+	for (shared_ptr<Object> o : worldToRender->GetEntities()) {
 		// TODO setup object matrix
-		vec3 up = e->orientation.GetUpSide();
-		vec3 front = e->orientation.GetFrontSide();
+		vec3 up = o->orientation.GetUpSide();
+		vec3 front = o->orientation.GetFrontSide();
 		assert(up == normalize(up));
 		mat4 object = mat4(vec4(normalize(cross(up, front)), 0),
 						   vec4(up, 0),
 						   vec4(front, 0),
 						   vec4(0, 0, 0, 1));
-		object = translate(object, e->GetPosition());
+		object = translate(object, o->GetPosition());
 		glUniformMatrix4fv(modelUni, 1, GL_FALSE, value_ptr(object));
-		modelRenderer_.DrawModel(e->GetModelName());
+		modelRenderer_.DrawModel(o->GetModelName());
 	}
 }
 

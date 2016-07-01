@@ -6,6 +6,8 @@
 // Data type used to represent orientations of objects.
 // frontSide is the way (0, 0, 1) is pointing, upSide is the way 
 // (0, 1, 0) is pointing. This represents a unique orientation.
+
+// This class and it's access functions are all thread-safe.
 struct Orientation {
 public:
 	// Rotate an orientation along axis
@@ -15,9 +17,9 @@ public:
 
 	void SetFrontSide(const glm::vec3 &frontSide);
 
-	glm::vec3 GetUpSide();
+	glm::vec3 GetUpSide() const;
 
-	glm::vec3 GetFrontSide();
+	glm::vec3 GetFrontSide() const;
 private:
 	void WriteUpFrontSide(glm::vec3 frontSide, glm::vec3 upSide);
 

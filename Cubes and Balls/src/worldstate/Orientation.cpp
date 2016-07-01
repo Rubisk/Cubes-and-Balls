@@ -52,14 +52,14 @@ void Orientation::SetFrontSide(const vec3 &f) {
 	WriteUpFrontSide(frontSide, upSide);
 }
 
-vec3 Orientation::GetUpSide() {
+vec3 Orientation::GetUpSide() const {
 	orientationmtx.lock();
 	vec3 upSide = upSide_;
 	orientationmtx.unlock();
 	return upSide;
 }
 
-vec3 Orientation::GetFrontSide() {
+vec3 Orientation::GetFrontSide() const {
 	orientationmtx.lock();
 	vec3 frontSide = frontSide_;
 	orientationmtx.unlock();

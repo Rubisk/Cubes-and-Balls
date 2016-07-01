@@ -4,38 +4,30 @@
 #include <string>
 
 #include "glm/glm.hpp"
+
 #include "Orientation.h"
+#include "Object.h"
 
-class Entity {
+// This class and it's access functions are all thread-safe.
+class Entity : 
+	public Object {
 public:
-	virtual std::string GetModelName();
+	virtual float GetWeight() const;
 
-	virtual float GetWeight();
-
-	virtual bool IsImmovable();
-
-	glm::vec3 GetPosition();
-
-	void SetPosition(const glm::vec3 &position);
-
-	glm::vec3 GetSpeed();
+	glm::vec3 GetSpeed() const;
 
 	void SetSpeed(const glm::vec3 &speed);
 
-	glm::vec3 GetRotationAxis();
+	glm::vec3 GetRotationAxis() const;
 
 	void SetRotationAxis(const glm::vec3 &axis);
 
-	float GetRotationSpeed();
+	float GetRotationSpeed() const;
 
 	void SetRotationSpeed(float radians);
 
-	// Orientation handles it's own thread safety
-	Orientation orientation;
-
 	virtual ~Entity() {};
 private:
-	glm::vec3 position_ = glm::vec3(0, 0, 0);
 	glm::vec3 speed_ = glm::vec3(0, 0, 0);     // units/sec
 
 	glm::vec3 rotationAxis_;

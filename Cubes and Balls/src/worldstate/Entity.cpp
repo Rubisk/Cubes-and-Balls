@@ -6,37 +6,15 @@ using namespace std;
 using namespace glm;
 
 
-mutex positionmtx;
 mutex speedmtx;
 mutex rotationAxismtx;
 mutex rotationSpeedmtx;
 
-string Entity::GetModelName() {
-	return "";
-}
-
-float Entity::GetWeight() {
+float Entity::GetWeight() const {
 	return 0.0f;
 }
 
-bool Entity::IsImmovable() {
-	return false;
-}
-
-vec3 Entity::GetPosition() {
-	positionmtx.lock();
-	vec3 position = position_;
-	positionmtx.unlock();
-	return position;
-}
-
-void Entity::SetPosition(const vec3 &position) {
-	positionmtx.lock();
-	position_ = position;
-	positionmtx.unlock();
-}
-
-vec3 Entity::GetSpeed() {
+vec3 Entity::GetSpeed() const {
 	speedmtx.lock();
 	vec3 speed = speed_;
 	speedmtx.unlock();
@@ -49,7 +27,7 @@ void Entity::SetSpeed(const vec3 &speed) {
 	speedmtx.unlock();
 }
 
-vec3 Entity::GetRotationAxis() {
+vec3 Entity::GetRotationAxis() const {
 	rotationAxismtx.lock();
 	vec3 rotationAxis = rotationAxis_;
 	rotationAxismtx.unlock();
@@ -62,7 +40,7 @@ void Entity::SetRotationAxis(const vec3 & axis) {
 	rotationAxismtx.unlock();
 }
 
-float Entity::GetRotationSpeed() {
+float Entity::GetRotationSpeed() const {
 	rotationSpeedmtx.lock();
 	float rotationSpeed = rotationSpeed_;
 	rotationSpeedmtx.unlock();
