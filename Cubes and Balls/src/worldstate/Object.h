@@ -19,6 +19,8 @@ public:
 
 	virtual void SetPosition(const glm::vec3 &position);
 
+	virtual void Move(const glm::vec3 &distance);
+
 	virtual ~Object();
 private:
 	glm::vec3 position_ = glm::vec3(0, 0, 0);

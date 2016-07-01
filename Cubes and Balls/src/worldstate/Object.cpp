@@ -29,6 +29,10 @@ void Object::SetPosition(const vec3 &position) {
 	positionmtx.unlock();
 }
 
+void Object::Move(const glm::vec3 & distance) {
+	SetPosition(GetPosition() + distance);
+}
+
 Object::~Object() {
 }
 
