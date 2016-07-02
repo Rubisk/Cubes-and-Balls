@@ -11,6 +11,7 @@ mutex orientationmtx;
 
 
 void Orientation::Rotate(const vec3 &axis, float radians) {
+	if (radians == 0.0f) return;
 	vec3 upSide = rotate(GetUpSide(), radians, axis);
 	vec3 frontSide = rotate(GetFrontSide(), radians, axis);
 	WriteUpFrontSide(frontSide, upSide);
@@ -24,8 +25,8 @@ void Orientation::SetUpSide(const vec3 &u) {
 	// reset up to either (0, 0, 1) or (0, -1, 0).
 	if (distance(frontSide, upSide) < 0.00001 ||
 		distance(frontSide, -upSide) < 0.00001) {
-		frontSide = (-0.5 < upSide.z && upSide.z < 0.5)
-			? vec3(0, 0, 1) : vec3(0, -1, 0);
+		frontSide = (-0.5 < upSide.z || upSide.z < 0.5)
+			? vec3(0, -1, 0) : vec3(0, 0, 1);
 	}
 	else {
 		// Gram Schmidt
@@ -42,8 +43,8 @@ void Orientation::SetFrontSide(const vec3 &f) {
 	// reset up to either (0, 1, 0) or (0, 0, 1).
 	if (distance(frontSide, upSide) < 0.00001 ||
 		distance(frontSide, -upSide) < 0.00001) {
-		upSide = (-0.5 < frontSide_.y && frontSide_.y < 0.5)
-			? vec3(0, 1, 0) : vec3(1, 0, 0);
+		upSide = (-0.5 < frontSide_.y || frontSide_.y < 0.5)
+			? vec3(1, 0, 0) : vec3(0, 1, 0);
 	}
 	else {
 		// Gram Schmidt
