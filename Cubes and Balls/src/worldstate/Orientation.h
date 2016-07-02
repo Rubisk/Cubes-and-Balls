@@ -8,7 +8,7 @@
 // (0, 1, 0) is pointing. This represents a unique orientation.
 
 // This class and it's access functions are all thread-safe.
-struct Orientation {
+class Orientation {
 public:
 	// Rotate an orientation along axis
 	void Rotate(const glm::vec3 &axis, float radians);
