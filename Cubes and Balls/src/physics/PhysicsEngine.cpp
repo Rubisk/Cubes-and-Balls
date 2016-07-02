@@ -33,7 +33,7 @@ void PhysicsEngine::Loop_(PhysicsEngine *e, int loopsPerSecond) {
 void PhysicsEngine::Tick_(float timePassed) {
 	shared_ptr<WorldState> world = world_.lock();
 	for (shared_ptr<ForceGenerator> fg : forceGenerators_) {
-		fg->GenerateForces(timePassed);
+		fg->GenerateForces(forceApplier, timePassed);
 	}
 	forceApplier.UpdateForces(timePassed);
 	entityUpdater.UpdateEntities(timePassed);

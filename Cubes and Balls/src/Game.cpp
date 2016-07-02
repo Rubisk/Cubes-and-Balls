@@ -36,6 +36,8 @@ void Game::Setup() {
 	renderer_ = make_shared<Renderer>(800, 600);
 	renderer_->AddDrawer(worldRenderer_);
 	physics_ = make_shared<PhysicsEngine>();
+	playerController = make_shared<PlayerController>(worldState_->player);
+	physics_->RegisterForceGenerator(playerController);
 
 	glfwSetWindowUserPointer(window_, this);
 	
@@ -56,7 +58,7 @@ void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate2 = make_shared<Crate>();
 	crate->SetPosition(vec3(0.0, 1.0f, 0.0f));
 	worldState_->AddEntity(crate);
-	worldState_->player->SetPosition(vec3(0, 0, 0));
+	worldState_->player->SetPosition(vec3(0, -1, 0));
 	worldState_->player->LookAt(vec3(0, 1, 0));
 	physics_->Start(worldState_, 60);
 }

@@ -160,6 +160,7 @@
     <ClCompile Include="src\physics\EntityUpdater.cpp" />
     <ClCompile Include="src\physics\ForceApplier.cpp" />
     <ClCompile Include="src\physics\PhysicsEngine.cpp" />
+    <ClCompile Include="src\PlayerController.cpp" />
     <ClCompile Include="src\renderer\ModelRenderer.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\shaders\ShaderLoader.cpp" />
@@ -183,7 +184,9 @@
     <ClInclude Include="src\ModelLoader.h" />
     <ClInclude Include="src\physics\EntityUpdater.h" />
     <ClInclude Include="src\physics\ForceApplier.h" />
+    <ClInclude Include="src\physics\ForceGenerator.h" />
     <ClInclude Include="src\physics\PhysicsEngine.h" />
+    <ClInclude Include="src\PlayerController.h" />
     <ClInclude Include="src\renderer\Drawer.h" />
     <ClInclude Include="src\renderer\ModelRenderer.h" />
     <ClInclude Include="src\renderer\Renderer.h" />

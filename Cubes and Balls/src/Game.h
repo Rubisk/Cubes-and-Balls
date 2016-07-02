@@ -8,6 +8,7 @@
 #include "renderer/Renderer.h"
 #include "renderer/WorldRenderer.h"
 #include "physics/PhysicsEngine.h"
+#include "PlayerController.h"
 
 // Handles creation and deletion of a renderer, world, IO/system, and
 // is there to make sure the parts can communicate with each other.
@@ -27,6 +28,7 @@ private:
 	std::shared_ptr<Renderer> renderer_;
 	std::shared_ptr<WorldRenderer> worldRenderer_;
 	std::shared_ptr<PhysicsEngine> physics_;
+	std::shared_ptr<PlayerController> playerController;
 
 	GLFWwindow* window_;
 };

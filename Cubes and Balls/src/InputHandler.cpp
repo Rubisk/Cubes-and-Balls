@@ -1,6 +1,7 @@
 #include "InputHandler.h"
-#include "Game.h"
 
+#include "Game.h"
+#include "worldstate/Entity.h"
 #include "physics/ForceApplier.h"
 
 #include "glm/glm.hpp"
@@ -13,34 +14,53 @@ void InputHandler::KeyInput(GLFWwindow * window, int key, int scancode, int acti
 	Game* game = reinterpret_cast<Game*>(glfwGetWindowUserPointer(window));
 	switch (key) {
 	case GLFW_KEY_W:
-		game->worldState_->player->MoveLocal(vec3(0, 0, -0.2));
+		if (action == GLFW_PRESS)
+			game->playerController->StartMoving(M_Forward);
+		else if (action == GLFW_RELEASE)
+			game->playerController->StopMoving(M_Forward);
 		break;
 	case GLFW_KEY_S:
-		game->worldState_->player->MoveLocal(vec3(0, 0, 0.2));
+		if (action == GLFW_PRESS)
+			game->playerController->StartMoving(M_Backward);
+		else if (action == GLFW_RELEASE)
+			game->playerController->StopMoving(M_Backward);
 		break;
 	case GLFW_KEY_D:
-		game->worldState_->player->MoveLocal(vec3(0.2, 0, 0));
+		if (action == GLFW_PRESS)
+			game->playerController->StartMoving(M_Right);
+		else if (action == GLFW_RELEASE)
+			game->playerController->StopMoving(M_Right);
 		break;
 	case GLFW_KEY_A:
-		game->worldState_->player->MoveLocal(vec3(-0.2, 0, 0));
+		if (action == GLFW_PRESS)
+			game->playerController->StartMoving(M_Left);
+		else if (action == GLFW_RELEASE)
+			game->playerController->StopMoving(M_Left);
 		break;
 	case GLFW_KEY_I:
-		game->worldState_->player->RotateLocal(vec3(1, 0, 0), pi<float>() / 100);
+		if (action == GLFW_PRESS)
+			game->playerController->StartRotating(R_Up);
+		else if (action == GLFW_RELEASE)
+			game->playerController->StopRotating(R_Up);
 		break;
 	case GLFW_KEY_K:
-		game->worldState_->player->RotateLocal(vec3(1, 0, 0), -pi<float>() / 100);
+		if (action == GLFW_PRESS)
+			game->playerController->StartRotating(R_Down);
+		else if (action == GLFW_RELEASE)
+			game->playerController->StopRotating(R_Down);
 		break;
 	case GLFW_KEY_J:
-		game->worldState_->player->RotateLocal(vec3(0, 1, 0), pi<float>() / 100);
+		if (action == GLFW_PRESS)
+			game->playerController->StartRotating(R_Left);
+		else if (action == GLFW_RELEASE)
+			game->playerController->StopRotating(R_Left);
 		break;
 	case GLFW_KEY_L:
-		game->worldState_->player->RotateLocal(vec3(0, 1, 0), -pi<float>() / 100);
+		if (action == GLFW_PRESS)
+			game->playerController->StartRotating(R_Right);
+		else if (action == GLFW_RELEASE)
+			game->playerController->StopRotating(R_Right);
 		break;
-	case GLFW_KEY_F:
-		ApplyForce(game->worldState_->GetEntities().front(), vec3(0, 1, 0), vec3(0, 0, 1), 0.02f);
-		break;
-	case GLFW_KEY_G:
-		ApplyForce(game->worldState_->GetEntities().front(), vec3(0, 1, 0), vec3(0, 0, -1), 0.02f);
 	}
 }
 
