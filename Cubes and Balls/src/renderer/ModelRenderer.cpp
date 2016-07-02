@@ -37,6 +37,8 @@ ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(const string &target
 		state.location = 0;
 		state.mode = GL_TRIANGLES;
 
+		if (model.vertices.size() == 0) return state;
+
 		glGenVertexArrays(1, &state.vao);
 		glGenBuffers(1, &vertexBuffer);
 		glGenBuffers(1, &elementBuffer);
