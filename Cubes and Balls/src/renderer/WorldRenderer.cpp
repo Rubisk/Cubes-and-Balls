@@ -37,7 +37,7 @@ void WorldRenderer::Draw() {
 	glUniformMatrix4fv(projectionUni, 1, GL_FALSE, value_ptr(projectionMatrix));
 
 	for (shared_ptr<Object> o : worldToRender->GetEntities()) {
-		mat4 object = o->GetLocalToWorldSpaceMatrix();
+		mat4 object = o->LocalToWorldSpaceMatrix();
 		glUniformMatrix4fv(modelUni, 1, GL_FALSE, value_ptr(object));
 		modelRenderer_.DrawModel(o->GetModelName());
 	}

@@ -24,8 +24,8 @@ void ForceApplier::AddForceLocal(shared_ptr<Entity> e,
 }
 
 void ForceApplier::AddForceLocal(Force &f) {
-	f.forceVec = vec3(f.e->GetLocalToWorldSpaceMatrix() * vec4(f.forceVec, 0));
-	f.localPosition = vec3(f.e->GetLocalToWorldSpaceMatrix() * vec4(f.localPosition, 0));
+	f.forceVec = vec3(f.e->LocalToWorldSpaceMatrix() * vec4(f.forceVec, 0));
+	f.localPosition = vec3(f.e->LocalToWorldSpaceMatrix() * vec4(f.localPosition, 0));
 	forcesToApply_.push_front(f);
 }
 
