@@ -30,7 +30,7 @@ public:
 private:
 	glm::vec3 speed_ = glm::vec3(0, 0, 0);     // units/sec
 
-	glm::vec3 rotationAxis_;
+	glm::vec3 rotationAxis_ = glm::vec3(0, 1, 0);
 	float rotationSpeed_ = 0; // radians/sec
 };
 

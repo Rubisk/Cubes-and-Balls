@@ -1,10 +1,11 @@
 #include "Game.h"
-#include "InputHandler.h"
 
+#include "InputHandler.h"
 #include "worldstate/WorldState.h"
 #include "worldstate/Crate.h"
 #include "renderer/Renderer.h"
 #include "renderer/WorldRenderer.h"
+#include "physics/PhysicsEngine.h"
 
 using namespace std;
 using namespace glm;
@@ -33,6 +34,7 @@ void Game::Setup() {
 	worldRenderer_ = make_shared<WorldRenderer>(worldState_, 800.0f, 600.0f);
 	renderer_ = make_shared<Renderer>(800, 600);
 	renderer_->AddDrawer(worldRenderer_);
+	physics_ = make_shared<PhysicsEngine>();
 
 	glfwSetWindowUserPointer(window_, this);
 	
@@ -59,6 +61,10 @@ void Game::SetupTempWorldState() {
 	worldState_->AddEntity(crate2);
 	worldState_->player->SetPosition(vec3(0, 0, 0));
 	worldState_->player->LookAt(vec3(1, 0, 0));
+	worldState_->player->SetSpeed(vec3(0, 0.05f, 0));
+	physics_->Start(worldState_, 60);
 }
 
-void Game::Stop() {}
+void Game::Stop() {
+	physics_->Stop();
+}
