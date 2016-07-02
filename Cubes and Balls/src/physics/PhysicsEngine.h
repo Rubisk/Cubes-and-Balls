@@ -5,14 +5,23 @@
 
 #include "../worldstate/WorldState.h"
 #include "EntityUpdater.h"
+#include "ForceApplier.h"
+#include "ForceGenerator.h"
 
 class PhysicsEngine {
 public:
-	void Start(const std::weak_ptr<WorldState> &world_, int updatesPerSecond);
+	void Start(std::weak_ptr<WorldState> world_, int updatesPerSecond);
 
 	void Stop();
 
+	void RegisterForceGenerator(std::shared_ptr<ForceGenerator> generator);
+
+	void UnRegisterForceGenerator(std::shared_ptr<ForceGenerator> generator);
+
 	~PhysicsEngine();
+
+	EntityUpdater entityUpdater;
+	ForceApplier forceApplier;
 private:
 	static void Loop_(PhysicsEngine *e, int loopsPerSecond);
 
@@ -22,7 +31,7 @@ private:
 	std::thread* thread_;
 
 	std::weak_ptr<WorldState> world_;
-	EntityUpdater entityUpdater;
+	std::list<std::shared_ptr<ForceGenerator>> forceGenerators_;
 };
 
 #endif

@@ -6,7 +6,7 @@
 using namespace std;
 
 
-void PhysicsEngine::Start(const std::weak_ptr<WorldState>& world, int updatesPerSecond) {
+void PhysicsEngine::Start(weak_ptr<WorldState> world, int updatesPerSecond) {
 	world_ = world;
 	this_thread::sleep_for(chrono::seconds(1));
 	shouldStop_ = false;
@@ -22,7 +22,6 @@ void PhysicsEngine::Stop() {
 
 
 void PhysicsEngine::Loop_(PhysicsEngine *e, int loopsPerSecond) {
-
 	while (!e->shouldStop_) {
 		auto start = chrono::high_resolution_clock::now();
 		e->Tick_(1.0f / loopsPerSecond);
@@ -33,7 +32,19 @@ void PhysicsEngine::Loop_(PhysicsEngine *e, int loopsPerSecond) {
 
 void PhysicsEngine::Tick_(float timePassed) {
 	shared_ptr<WorldState> world = world_.lock();
+	for (shared_ptr<ForceGenerator> fg : forceGenerators_) {
+		fg->GenerateForces(timePassed);
+	}
+	forceApplier.UpdateForces(timePassed);
 	entityUpdater.UpdateEntities(timePassed);
+}
+
+void PhysicsEngine::RegisterForceGenerator(shared_ptr<ForceGenerator> generator) {
+	forceGenerators_.push_back(generator);
+}
+
+void PhysicsEngine::UnRegisterForceGenerator(shared_ptr<ForceGenerator> generator) {
+	forceGenerators_.remove(generator);
 }
 
 PhysicsEngine::~PhysicsEngine() {
