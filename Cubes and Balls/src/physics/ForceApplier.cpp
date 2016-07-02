@@ -3,14 +3,63 @@
 using namespace std;
 using namespace glm;
 
-void ApplyForce(const shared_ptr<Entity> &e,
-				const vec3 &force,
-				const vec3 &localPosition,
-				float duration) {
+void ForceApplier::AddForce(shared_ptr<Entity> e,
+							vec3 &forceVec,
+							vec3 &localPosition,
+							float duration) {
+	Force f(e, forceVec, localPosition, duration);
+	AddForce(f);
+}
+
+void ForceApplier::AddForce(Force &f) {
+	forcesToApply_.push_front(f);
+}
+
+void ForceApplier::AddForceLocal(shared_ptr<Entity> e,
+							vec3 &forceVec,
+							vec3 &localPosition,
+							float duration) {
+	Force f(e, forceVec, localPosition, duration);
+	AddForceLocal(f);
+}
+
+void ForceApplier::AddForceLocal(Force &f) {
+	f.forceVec = vec3(f.e->GetLocalToWorldSpaceMatrix() * vec4(f.forceVec, 0));
+	f.localPosition = vec3(f.e->GetLocalToWorldSpaceMatrix() * vec4(f.localPosition, 0));
+	forcesToApply_.push_front(f);
+}
+
+
+void ForceApplier::UpdateForces(float timePassed) {
+	list<Force>::iterator f = forcesToApply_.begin();
+	while (f != forcesToApply_.end()) {
+		float timeLeft = f->duration - timePassed;
+		if (timeLeft < 0) {
+			ApplyForce_(*f);
+			forcesToApply_.erase(f++);
+		}
+		else {
+			f->duration = timePassed;
+			ApplyForce_(*f);
+			f->duration = timeLeft;
+		}
+	}
+}
+
+void ForceApplier::ApplyForce_(Force &force) {
+	if (force.e == nullptr) return;
+
+	shared_ptr<Entity> &e = force.e;
+	float duration = force.duration;
+	vec3 localPosition = force.localPosition;
+	vec3 forceVec = force.forceVec;
+
 	// Split the force in a force that rotates the object, and one that moves the center.
 	// (I suggest sketching the picture of a sphere)
-	vec3 rotationForce = force - dot(force, localPosition) * force; // Gram-Schmidt
-	vec3 centerForce = force - rotationForce;
+	vec3 rotationForce;
+	if (length(localPosition) == 0) rotationForce = vec3(0, 0, 0);
+	else rotationForce = forceVec - dot(forceVec, localPosition) * forceVec; // Gram-Schmidt
+	vec3 centerForce = forceVec - rotationForce;
 
 	float weight = e->GetWeight();
 
@@ -21,14 +70,19 @@ void ApplyForce(const shared_ptr<Entity> &e,
 
 	// Update rotation momentum
 	vec3 oldRotationAxis = e->GetRotationAxis();
-	vec3 newRotationAxis = normalize(cross(localPosition, rotationForce));
+	vec3 newRotationAxis;
+	if (length(localPosition) == 0) newRotationAxis = vec3(0, 0, 0);
+	else newRotationAxis = normalize(cross(localPosition, rotationForce));
+	
 
 	float oldRotationSpeed = e->GetRotationSpeed();
-	float newRotationSpeed = length(rotationForce) * duration / (weight * length(localPosition));
+	float newRotationSpeed;
+	if (length(localPosition) == 0) newRotationSpeed = 0;
+	else newRotationSpeed = length(rotationForce) * duration / (weight * length(localPosition));
 
 	vec3 totalRotationAxis = (oldRotationSpeed * oldRotationAxis + newRotationSpeed * newRotationAxis);
 	totalRotationAxis = (length(totalRotationAxis) == 0) ? totalRotationAxis : normalize(totalRotationAxis);
 
 	e->SetRotationAxis(totalRotationAxis);
-	e->SetRotationSpeed(dot(oldRotationAxis, newRotationAxis) * oldRotationSpeed + newRotationSpeed);
+	e->SetRotationSpeed(dot(oldRotationAxis, totalRotationAxis) * oldRotationSpeed + dot(newRotationAxis, totalRotationAxis) * newRotationSpeed);
 }
