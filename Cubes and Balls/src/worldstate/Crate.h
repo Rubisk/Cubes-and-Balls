@@ -9,9 +9,9 @@
 class Crate :
 	public Entity {
 public:
-	virtual std::string GetModelName();
-
-	~Crate();
+	virtual std::string GetModelName() const;
+	
+	virtual float GetWeight() const;
 };
 
 #endif

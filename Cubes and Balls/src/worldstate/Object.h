@@ -11,9 +11,9 @@
 class Object :
 	public Orientation {
 public:
-	virtual std::string GetModelName();
+	virtual std::string GetModelName() const;
 
-	virtual glm::vec3 GetModelScale();
+	virtual glm::vec3 GetModelScale() const ;
 
 	virtual glm::vec3 GetPosition() const;
 

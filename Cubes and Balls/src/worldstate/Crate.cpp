@@ -2,10 +2,10 @@
 
 using namespace std;
 
-string Crate::GetModelName() {
+string Crate::GetModelName() const {
 	return "crate";
 }
 
-
-Crate::~Crate() {
+float Crate::GetWeight() const {
+	return 1.0f;
 }
