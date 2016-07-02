@@ -6,6 +6,7 @@
 #include "renderer/Renderer.h"
 #include "renderer/WorldRenderer.h"
 #include "physics/PhysicsEngine.h"
+#include "physics/ForceApplier.h"
 
 using namespace std;
 using namespace glm;
@@ -53,15 +54,10 @@ void Game::Start() {
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
 	shared_ptr<Crate> crate2 = make_shared<Crate>();
-	crate->SetPosition(vec3(1.0, 0.0f, 0.0f));
-	crate2->SetPosition(vec3(0.5f, 0.2f, 0.3f));
-	crate2->Rotate(vec3(0, 0, 1), 3.1415f / 5.0f);
-	crate2->Rotate(vec3(0, 1, 0), 3.1415f / 5.0f);
+	crate->SetPosition(vec3(0.0, 1.0f, 0.0f));
 	worldState_->AddEntity(crate);
-	worldState_->AddEntity(crate2);
 	worldState_->player->SetPosition(vec3(0, 0, 0));
-	worldState_->player->LookAt(vec3(1, 0, 0));
-	worldState_->player->SetSpeed(vec3(0, 0.05f, 0));
+	worldState_->player->LookAt(vec3(0, 1, 0));
 	physics_->Start(worldState_, 60);
 }
 

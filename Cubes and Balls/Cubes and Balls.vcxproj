@@ -157,6 +157,8 @@
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\ModelLoader.cpp" />
+    <ClCompile Include="src\physics\EntityUpdater.cpp" />
+    <ClCompile Include="src\physics\ForceApplier.cpp" />
     <ClCompile Include="src\physics\PhysicsEngine.cpp" />
     <ClCompile Include="src\renderer\ModelRenderer.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
@@ -179,6 +181,8 @@
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\InputHandler.h" />
     <ClInclude Include="src\ModelLoader.h" />
+    <ClInclude Include="src\physics\EntityUpdater.h" />
+    <ClInclude Include="src\physics\ForceApplier.h" />
     <ClInclude Include="src\physics\PhysicsEngine.h" />
     <ClInclude Include="src\renderer\Drawer.h" />
     <ClInclude Include="src\renderer\ModelRenderer.h" />

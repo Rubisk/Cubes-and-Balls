@@ -1,6 +1,8 @@
 #include "InputHandler.h"
 #include "Game.h"
 
+#include "physics/ForceApplier.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/constants.hpp"
 
@@ -34,6 +36,11 @@ void InputHandler::KeyInput(GLFWwindow * window, int key, int scancode, int acti
 	case GLFW_KEY_L:
 		game->worldState_->player->RotateLocal(vec3(0, 1, 0), -pi<float>() / 100);
 		break;
+	case GLFW_KEY_F:
+		ApplyForce(game->worldState_->GetEntities().front(), vec3(0, 1, 0), vec3(0, 0, 1), 0.02f);
+		break;
+	case GLFW_KEY_G:
+		ApplyForce(game->worldState_->GetEntities().front(), vec3(0, 1, 0), vec3(0, 0, -1), 0.02f);
 	}
 }
 

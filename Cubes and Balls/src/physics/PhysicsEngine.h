@@ -4,7 +4,7 @@
 #include <thread>
 
 #include "../worldstate/WorldState.h"
-
+#include "EntityUpdater.h"
 
 class PhysicsEngine {
 public:
@@ -19,10 +19,10 @@ private:
 	void Tick_(float timePassed);
 
 	volatile bool shouldStop_;
-
 	std::thread* thread_;
 
 	std::weak_ptr<WorldState> world_;
+	EntityUpdater entityUpdater;
 };
 
 #endif

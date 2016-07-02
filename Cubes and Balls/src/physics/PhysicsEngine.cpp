@@ -11,6 +11,7 @@ void PhysicsEngine::Start(const std::weak_ptr<WorldState>& world, int updatesPer
 	this_thread::sleep_for(chrono::seconds(1));
 	shouldStop_ = false;
 	thread_ = new thread(PhysicsEngine::Loop_, this, updatesPerSecond);
+	entityUpdater.SetWorldState(world);
 }
 
 void PhysicsEngine::Stop() {
@@ -32,10 +33,7 @@ void PhysicsEngine::Loop_(PhysicsEngine *e, int loopsPerSecond) {
 
 void PhysicsEngine::Tick_(float timePassed) {
 	shared_ptr<WorldState> world = world_.lock();
-	for (shared_ptr<Entity> e : world->GetEntities()) {
-		e->SetPosition(e->GetPosition() + timePassed * e->GetSpeed());
-		e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed());
-	}
+	entityUpdater.UpdateEntities(timePassed);
 }
 
 PhysicsEngine::~PhysicsEngine() {
