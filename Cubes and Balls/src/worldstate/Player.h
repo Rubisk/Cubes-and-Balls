@@ -1,5 +1,5 @@
-#ifndef CUBE_AND_BALLS_SRC_CAMERA_H_
-#define CUBE_AND_BALLS_SRC_CAMERA_H_
+#ifndef CUBE_AND_BALLS_SRC_PLAYER_H_
+#define CUBE_AND_BALLS_SRC_PLAYER_H_
 
 #include "glm/glm.hpp"
 #include "Entity.h"
