@@ -21,7 +21,7 @@ public:
 
 	virtual void Move(const glm::vec3 &distance);
 
-	glm::mat4 Object::GetLocalToWorldSpaceMatrix() const;
+	glm::mat4 LocalToWorldSpaceMatrix() const;
 
 	virtual ~Object();
 private:
