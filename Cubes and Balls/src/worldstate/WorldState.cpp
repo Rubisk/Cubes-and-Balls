@@ -79,6 +79,6 @@ bool WorldState::InBox_(const glm::vec3 &min, const glm::vec3 &max, shared_ptr<O
 	return inBox;
 }
 
-bool WorldState::InSphere_(const glm::vec3 &center, float radius, shared_ptr<Object> e) {
-	return distance(e->GetPosition(), center) <= radius;
+bool WorldState::InSphere_(const glm::vec3 &center, float radius, shared_ptr<Object> o) {
+	return distance(o->GetPosition(), center) <= radius + o->GetModel()->maxRadius;
 }
