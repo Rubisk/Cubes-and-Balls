@@ -157,7 +157,12 @@
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\ModelLoader.cpp" />
-    <ClCompile Include="src\physics\CollisionDetector.cpp" />
+    <ClCompile Include="src\physics\CollisionDetector.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MaxSpeed</Optimization>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</BasicRuntimeChecks>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</BasicRuntimeChecks>
+    </ClCompile>
     <ClCompile Include="src\physics\EntityUpdater.cpp" />
     <ClCompile Include="src\physics\ForceApplier.cpp" />
     <ClCompile Include="src\physics\PhysicsEngine.cpp" />
