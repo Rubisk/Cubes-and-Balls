@@ -28,6 +28,8 @@ vec3 SwapAxi(const vec3 &target, int newZ) {
 		return vec3(target.x, target.z, target.y);
 	case 2:
 		return vec3(target);
+	default:
+		throw std::runtime_error("Axis should be in (0, 1, 2).");
 	}
 }
 

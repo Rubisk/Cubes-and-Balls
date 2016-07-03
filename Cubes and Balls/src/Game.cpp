@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include "glm/gtc/constants.hpp"
+
 #include "InputHandler.h"
 #include "worldstate/WorldState.h"
 #include "worldstate/Crate.h"
@@ -36,6 +38,7 @@ void Game::Setup() {
 	renderer_ = make_shared<Renderer>(800, 600);
 	renderer_->AddDrawer(worldRenderer_);
 	physics_ = make_shared<PhysicsEngine>();
+	physics_->Start(worldState_, 60);
 	playerController = make_shared<PlayerController>(worldState_->player);
 	physics_->RegisterForceGenerator(playerController);
 
@@ -57,10 +60,12 @@ void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
 	shared_ptr<Crate> crate2 = make_shared<Crate>();
 	crate->SetPosition(vec3(0.0, 1.0f, 0.0f));
+	crate2->SetPosition(vec3(0.0, 0.5f, 0.0f));
+	crate2->Rotate(vec3(1, 0, 0), pi<float>() / 3);
 	worldState_->AddEntity(crate);
+	worldState_->AddEntity(crate2);
 	worldState_->player->SetPosition(vec3(0, -1, 0));
 	worldState_->player->LookAt(vec3(0, 1, 0));
-	physics_->Start(worldState_, 60);
 }
 
 void Game::Stop() {
