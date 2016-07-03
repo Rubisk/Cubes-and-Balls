@@ -40,8 +40,8 @@ void PhysicsEngine::Tick_(float timePassed) {
 	for (shared_ptr<Entity> e : world_->GetEntities()) {
 		vec3 outputOfCollision;
 		shared_ptr<Object> collider;
+
 		if (collisionDetector.IsColliding(e, outputOfCollision, collider)) {
-			cout << "collision";
 		}
 	}
 	forceApplier.UpdateForces(timePassed);

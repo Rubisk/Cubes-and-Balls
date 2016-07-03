@@ -9,6 +9,7 @@
 
 #include "CollisionDetector.h"
 
+#include <chrono>
 
 using namespace std;
 using namespace glm;
@@ -40,9 +41,9 @@ vec3 SwapAxi(const vec3 &target, int newZ) {
 bool GetValueAtPoint(const vec3 &v1, const vec3 &v2, const vec3 &v3, float x, float y, float &outputZ) {
 	// We know that any point in the face can be written as a*v1 + b*v2 + c*v3, with a + b + c = 1.
 	// This gives us a set of linear equations we can solve.
-	mat3 system = {1, 1, 1,
+	mat3 system = transpose(mat3{1, 1, 1,
 		v1.x, v2.x, v3.x,
-		v1.y, v2.y, v3.y};
+		v1.y, v2.y, v3.y});
 	if (determinant(system) == 0) return false;
 	mat3 solution = inverse(system);
 	vec3 proportions = solution * vec3(1, x, y);
@@ -83,11 +84,11 @@ void WrapBox(shared_ptr<Object> target, Box &outputBox) {
 	std::vector<GLuint>::const_iterator it = model->elements.begin();
 	while (it != model->elements.end()) {
 		// Load 3 vertices from model data representing the face.
-		v1 = vec3(model->vertices[*it], model->vertices[*it + 1], model->vertices[*it + 2]);
+		v1 = vec3(model->vertices[6 * *it], model->vertices[6 * *it + 1], model->vertices[6 * *it + 2]);
 		it++;
-		v2 = vec3(model->vertices[*it], model->vertices[*it + 1], model->vertices[*it + 2]);
+		v2 = vec3(model->vertices[6 * *it], model->vertices[6 * *it + 1], model->vertices[6 * *it + 2]);
 		it++;
-		v3 = vec3(model->vertices[*it], model->vertices[*it + 1], model->vertices[*it + 2]);
+		v3 = vec3(model->vertices[6 * *it], model->vertices[6 * *it + 1], model->vertices[6 * *it + 2]);
 		it++;
 
 		// The vertices in model are in local space, but the box is in world space.
@@ -114,18 +115,18 @@ void WrapBox(shared_ptr<Object> target, Box &outputBox) {
 			for (vec3 faceCorner : {swappedv1, swappedv2, swappedv3}) {
 				if (faceCorner.x > boxMax.x || faceCorner.x < boxMin.x ||
 					faceCorner.y > boxMax.y || faceCorner.y < boxMin.y) continue;
-				if (GetValueAtPoint(v1, v2, v3, faceCorner.x, faceCorner.y, outputZ)) {
+				if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, faceCorner.x, faceCorner.y, outputZ)) {
 					if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-					if (outputZ > output.max[axis]) output.min[axis] = outputZ;
+					if (outputZ > output.max[axis]) output.max[axis] = outputZ;
 				}
 			}
 
 			// Box corners.
 			for (float x : {boxMin.x, boxMax.x}) {
 				for (float y : {boxMin.y, boxMax.y}) {
-					if (GetValueAtPoint(v1, v2, v3, x, y, outputZ)) {
+					if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, x, y, outputZ)) {
 						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.min[axis] = outputZ;
+						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
 					}
 				}
 			}
@@ -138,22 +139,22 @@ void WrapBox(shared_ptr<Object> target, Box &outputBox) {
 					if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
 											   vec2(boxMin), vec2(boxMin.x, boxMax.y), outputZ)) {
 						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.min[axis] = outputZ;
+						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
 					}
 					if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
 											   vec2(boxMin), vec2(boxMax.x, boxMin.y), outputZ)) {
 						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.min[axis] = outputZ;
+						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
 					}
 					if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
 											   vec2(boxMax), vec2(boxMin.x, boxMax.y), outputZ)) {
 						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.min[axis] = outputZ;
+						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
 					}
 					if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
 											   vec2(boxMax), vec2(boxMax.x, boxMin.y), outputZ)) {
 						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.min[axis] = outputZ;
+						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
 					}
 				}
 			}
@@ -172,6 +173,7 @@ bool CollisionDetector::IsColliding(shared_ptr<Object> toTest, vec3 &outputCente
 	if (world_ == nullptr) return false;
 	vec3 centerOfCollision;
 	for (shared_ptr<Object> object : world_->GetObjects()) {
+		if (object == toTest) continue;
 		if (Colliding(object, toTest, centerOfCollision)) {
 			outputCollider = object;
 			outputCenterOfCollision = centerOfCollision;
@@ -193,6 +195,7 @@ bool CollisionDetector::Colliding(shared_ptr<Object> first, shared_ptr<Object> s
 			outputCenterOfCollision = 0.5f * (box.min + box.max);
 			return true;
 		}
+		box = newBox;
 	}
 	return false;
 }
