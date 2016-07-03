@@ -28,16 +28,16 @@ ModelRenderer::~ModelRenderer() {
 
 ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(const string &target) {
 	if (stateBuffer_.find(target) == stateBuffer_.end()) {
-		Model model = modelLoader_.GetModel(target);
+		shared_ptr<const Model> model = modelLoader_.GetModel(target);
 		GLModelState state;
 		GLuint vertexBuffer;
 		GLuint elementBuffer;
 
-		state.count = model.elements.size();
+		state.count = model->elements.size();
 		state.location = 0;
 		state.mode = GL_TRIANGLES;
 
-		if (model.vertices.size() == 0) return state;
+		if (model->vertices.size() == 0) return state;
 
 		glGenVertexArrays(1, &state.vao);
 		glGenBuffers(1, &vertexBuffer);
@@ -49,12 +49,12 @@ ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(const string &target
 		glBindVertexArray(state.vao);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, model.elements.size() * sizeof(GLuint), &model.elements[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->elements.size() * sizeof(GLuint), &model->elements[0], GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, model.vertices.size() * sizeof(GLfloat), &model.vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, model->vertices.size() * sizeof(GLfloat), &model->vertices[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (GLvoid*) 0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (GLvoid*) 3);
 

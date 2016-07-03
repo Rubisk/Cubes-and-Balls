@@ -12,7 +12,7 @@
 using namespace std;
 using namespace glm;
 
-Model ModelLoader::GetModel(const string &name) {
+shared_ptr<const Model> ModelLoader::GetModel(const string &name) {
 	if (models_.find(name) == models_.end()) {
 		TryLoadModel_(name);
 	}
@@ -63,5 +63,5 @@ void ModelLoader::TryLoadModel_(const string &name) {
 				<< line << "\" ignoring and loading the next line.";
 		}
 	}
-	models_[name] = model;
+	models_[name] = make_shared<const Model>(model);
 }

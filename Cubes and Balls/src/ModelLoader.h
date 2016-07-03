@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 #include "GL/glew.h"
 
@@ -19,11 +20,11 @@ struct Model {
 
 class ModelLoader {
 public:
-	Model GetModel(const std::string &name);
+	std::shared_ptr<const Model> GetModel(const std::string &name);
 private:
 	void TryLoadModel_(const std::string &name);
 
-	std::map<std::string, Model> models_;
+	std::map<std::string, std::shared_ptr<const Model>> models_;
 };
 
 #endif
