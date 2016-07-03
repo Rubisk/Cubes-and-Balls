@@ -23,7 +23,7 @@ public:
 
 	virtual ~Orientation();
 private:
-	void WriteUpFrontSide(glm::vec3 frontSide, glm::vec3 upSide);
+	void WriteUpFrontSide(const glm::vec3 &frontSide, const glm::vec3 &upSide);
 
 	glm::vec3 frontSide_ = glm::vec3(0, 0, 1);
 	glm::vec3 upSide_ = glm::vec3(0, 1, 0);

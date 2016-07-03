@@ -24,9 +24,9 @@ public:
 
 	void Draw();
 
-	void AddDrawer(const std::shared_ptr<Drawer> &drawer);
+	void AddDrawer(std::shared_ptr<Drawer> drawer);
 
-	void RemoveDrawer(const std::shared_ptr<Drawer> &drawer);
+	void RemoveDrawer(std::shared_ptr<Drawer> drawer);
 
 	void SetBackGround(const glm::vec4 &backGround);
 private:

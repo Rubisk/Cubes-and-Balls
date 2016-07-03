@@ -9,21 +9,21 @@ WorldState::WorldState() {
 	objects_.push_front(player);
 }
 
-void WorldState::AddEntity(const shared_ptr<Entity> &entity) {
+void WorldState::AddEntity(shared_ptr<Entity> entity) {
 	entities_.push_front(entity);
 	objects_.push_front(entity);
 }
 
-void WorldState::RemoveEntity(const shared_ptr<Entity> &entity) {
+void WorldState::RemoveEntity(shared_ptr<Entity> entity) {
 	entities_.remove(entity);
 	objects_.remove(entity);
 }
 
-void WorldState::AddObject(const shared_ptr<Object> &object) {
+void WorldState::AddObject(shared_ptr<Object> object) {
 	objects_.push_front(object);
 }
 
-void WorldState::RemoveObject(const shared_ptr<Object> &object) {
+void WorldState::RemoveObject(shared_ptr<Object> object) {
 	objects_.remove(object);
 }
 
@@ -35,7 +35,7 @@ forward_list<shared_ptr<Entity>> WorldState::GetEntitiesInBox(const vec3 &min, c
 	forward_list<shared_ptr<Entity>> entitiesInBox;
 	for (shared_ptr<Entity> e : entities_) {
 		bool inBox = true;
-		if (InBox_(min, max, *e)) entitiesInBox.push_front(e);
+		if (InBox_(min, max, e)) entitiesInBox.push_front(e);
 	}
 	return entitiesInBox;
 }
@@ -43,7 +43,7 @@ forward_list<shared_ptr<Entity>> WorldState::GetEntitiesInBox(const vec3 &min, c
 forward_list<shared_ptr<Entity>> WorldState::GetEntitiesInSphere(const vec3 &center, float radius) {
 	forward_list<shared_ptr<Entity>> entitiesInSphere;
 	for (shared_ptr<Entity> e : entities_)
-		if (InSphere_(center, radius, *e)) entitiesInSphere.push_front(e);
+		if (InSphere_(center, radius, e)) entitiesInSphere.push_front(e);
 	return entitiesInSphere;
 }
 
@@ -54,19 +54,19 @@ forward_list<shared_ptr<Object>> WorldState::GetObjects() {
 forward_list<shared_ptr<Object>> WorldState::GetObjectsInBox(const vec3 &min, const vec3 &max) {
 	forward_list<shared_ptr<Object>> objectsInSphere;
 	for (shared_ptr<Object> o : objects_)
-		if (InBox_(min, max, *o)) objectsInSphere.push_front(o);
+		if (InBox_(min, max, o)) objectsInSphere.push_front(o);
 	return objectsInSphere;
 }
 
 forward_list<shared_ptr<Object>> WorldState::GetObjectsInSphere(const vec3 &center, float radius) {
 	forward_list<shared_ptr<Object>> objectsInSphere;
 	for (shared_ptr<Object> o : objects_)
-		if (InSphere_(center, radius, *o)) objectsInSphere.push_front(o);
+		if (InSphere_(center, radius, o)) objectsInSphere.push_front(o);
 	return objectsInSphere;
 }
 
-bool WorldState::InBox_(const glm::vec3 &min, const glm::vec3 &max, const Object &e) {
-	vec3 pos = e.GetPosition();
+bool WorldState::InBox_(const glm::vec3 &min, const glm::vec3 &max, shared_ptr<Object> o) {
+	vec3 pos = o->GetPosition();
 	bool inBox = true;
 	for (int i = 0; i < 3; i++) {
 		float minc = (min[i] < max[i]) ? min[i] : max[i];
@@ -79,6 +79,6 @@ bool WorldState::InBox_(const glm::vec3 &min, const glm::vec3 &max, const Object
 	return inBox;
 }
 
-bool WorldState::InSphere_(const glm::vec3 &center, float radius, const Object &e) {
-	return distance(e.GetPosition(), center) <= radius;
+bool WorldState::InSphere_(const glm::vec3 &center, float radius, shared_ptr<Object> e) {
+	return distance(e->GetPosition(), center) <= radius;
 }

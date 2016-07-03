@@ -12,7 +12,7 @@ using namespace std;
 using namespace glm;
 
 
-WorldRenderer::WorldRenderer(const weak_ptr<WorldState> &world, float screenWidth, float screenHeight) {
+WorldRenderer::WorldRenderer(shared_ptr<WorldState> world, float screenWidth, float screenHeight) {
 	worldToRender_ = world;
 	screenHeight_ = screenHeight;
 	screenWidth_ = screenWidth;
@@ -21,22 +21,18 @@ WorldRenderer::WorldRenderer(const weak_ptr<WorldState> &world, float screenWidt
 }
 
 void WorldRenderer::Draw() {
-	if (worldToRender_.expired()) return;
-
-	shared_ptr<WorldState> worldToRender = worldToRender_.lock();
-
 	glUseProgram(shaderProgram_);
 	GLuint modelUni = glGetUniformLocation(shaderProgram_, "model");
 	GLuint cameraUni = glGetUniformLocation(shaderProgram_, "camera");
 	GLuint projectionUni = glGetUniformLocation(shaderProgram_, "projection");
 
-	mat4 cameraMatrix = inverse(worldToRender->player->LocalToWorldSpaceMatrix());
+	mat4 cameraMatrix = inverse(worldToRender_->player->LocalToWorldSpaceMatrix());
 	mat4 projectionMatrix = perspective(pi<float>() / 3, screenWidth_ / screenHeight_, 0.1f, 100.0f);
 
 	glUniformMatrix4fv(cameraUni, 1, GL_FALSE, value_ptr(cameraMatrix));
 	glUniformMatrix4fv(projectionUni, 1, GL_FALSE, value_ptr(projectionMatrix));
 
-	for (shared_ptr<Object> o : worldToRender->GetEntities()) {
+	for (shared_ptr<Object> o : worldToRender_->GetEntities()) {
 		mat4 object = o->LocalToWorldSpaceMatrix();
 		glUniformMatrix4fv(modelUni, 1, GL_FALSE, value_ptr(object));
 		modelRenderer_.DrawModel(o->GetModelName());

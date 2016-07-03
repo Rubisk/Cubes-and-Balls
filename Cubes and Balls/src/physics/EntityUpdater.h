@@ -8,13 +8,13 @@
 
 class EntityUpdater {
 public:
-	void SetWorldState(const std::weak_ptr<WorldState> &world);
+	void SetWorldState(std::shared_ptr<WorldState> world);
 
 	void UpdateEntities(float timePassed);
 private:
-	void UpdateEntity_(std::shared_ptr<Entity> &e, float timePassed);
+	void UpdateEntity_(std::shared_ptr<Entity> e, float timePassed);
 
-	std::weak_ptr<WorldState> world_;
+	std::shared_ptr<WorldState> world_;
 };
 
 #endif

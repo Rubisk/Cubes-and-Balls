@@ -12,7 +12,7 @@
 
 class PhysicsEngine {
 public:
-	void Start(std::weak_ptr<WorldState> world_, int updatesPerSecond);
+	void Start(std::shared_ptr<WorldState> world_, int updatesPerSecond);
 
 	void Stop();
 
@@ -33,7 +33,7 @@ private:
 	volatile bool shouldStop_;
 	std::thread* thread_;
 
-	std::weak_ptr<WorldState> world_;
+	std::shared_ptr<WorldState> world_;
 	std::list<std::shared_ptr<ForceGenerator>> forceGenerators_;
 };
 

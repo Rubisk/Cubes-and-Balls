@@ -6,7 +6,7 @@
 using namespace std;
 
 
-void PhysicsEngine::Start(weak_ptr<WorldState> world, int updatesPerSecond) {
+void PhysicsEngine::Start(shared_ptr<WorldState> world, int updatesPerSecond) {
 	world_ = world;
 	this_thread::sleep_for(chrono::seconds(1));
 	shouldStop_ = false;
@@ -32,7 +32,6 @@ void PhysicsEngine::Loop_(PhysicsEngine *e, int loopsPerSecond) {
 }
 
 void PhysicsEngine::Tick_(float timePassed) {
-	shared_ptr<WorldState> world = world_.lock();
 	for (shared_ptr<ForceGenerator> fg : forceGenerators_) {
 		fg->GenerateForces(forceApplier, timePassed);
 	}

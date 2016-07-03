@@ -13,14 +13,14 @@
 class WorldRenderer :
 	public Drawer {
 public:
-	WorldRenderer(const std::weak_ptr<WorldState> &world, float screenWidth, float screenHeight);
+	WorldRenderer(std::shared_ptr<WorldState> world, float screenWidth, float screenHeight);
 
 	virtual void Draw();
 
 	~WorldRenderer();
 private:
 	ModelRenderer modelRenderer_;
-	std::weak_ptr<WorldState> worldToRender_;
+	std::shared_ptr<WorldState> worldToRender_;
 	GLuint shaderProgram_;
 
 	float screenWidth_, screenHeight_;

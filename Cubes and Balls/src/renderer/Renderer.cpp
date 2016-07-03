@@ -15,11 +15,11 @@ void Renderer::Draw() {
 	for (std::shared_ptr<Drawer> drawer : drawers_) drawer->Draw();
 }
 
-void Renderer::AddDrawer(const std::shared_ptr<Drawer> &drawer) {
+void Renderer::AddDrawer(std::shared_ptr<Drawer> drawer) {
 	drawers_.push_front(drawer);
 }
 
-void Renderer::RemoveDrawer(const std::shared_ptr<Drawer> &drawer) {
+void Renderer::RemoveDrawer(std::shared_ptr<Drawer> drawer) {
 	drawers_.remove(drawer);
 }
 

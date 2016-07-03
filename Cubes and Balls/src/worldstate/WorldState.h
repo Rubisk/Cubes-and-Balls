@@ -15,13 +15,13 @@ public:
 
 	std::shared_ptr<Player> player;
 
-	void AddEntity(const std::shared_ptr<Entity> &entity);
+	void AddEntity(std::shared_ptr<Entity> entity);
 
-	void RemoveEntity(const std::shared_ptr<Entity> &entity);
+	void RemoveEntity(std::shared_ptr<Entity> entity);
 
-	void AddObject(const std::shared_ptr<Object> &object);
+	void AddObject(std::shared_ptr<Object> object);
 
-	void RemoveObject(const std::shared_ptr<Object> &object);
+	void RemoveObject(std::shared_ptr<Object> object);
 
 	std::forward_list<std::shared_ptr<Entity>> GetEntities();
 
@@ -35,9 +35,9 @@ public:
 
 	std::forward_list<std::shared_ptr<Object>> GetObjectsInSphere(const glm::vec3 &center, float radius);
 private:
-	bool InBox_(const glm::vec3 &min, const glm::vec3 &max, const Object &toTest);
+	bool InBox_(const glm::vec3 &min, const glm::vec3 &max, std::shared_ptr<Object> toTest);
 
-	bool InSphere_(const glm::vec3 &center, float radius, const Object &toTest);
+	bool InSphere_(const glm::vec3 &center, float radius, std::shared_ptr<Object> toTest);
 
 	std::forward_list<std::shared_ptr<Entity>> entities_;
 

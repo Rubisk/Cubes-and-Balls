@@ -69,7 +69,7 @@ vec3 Orientation::GetFrontSide() const {
 
 Orientation::~Orientation() {}
 
-void Orientation::WriteUpFrontSide(glm::vec3 frontSide, glm::vec3 upSide) {
+void Orientation::WriteUpFrontSide(const glm::vec3 &frontSide, const glm::vec3 &upSide) {
 	orientationmtx.lock();
 	upSide_ = upSide;
 	frontSide_ = frontSide;
