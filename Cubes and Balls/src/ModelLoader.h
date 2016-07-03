@@ -20,11 +20,11 @@ struct Model {
 
 class ModelLoader {
 public:
-	std::shared_ptr<const Model> GetModel(const std::string &name);
+	static std::shared_ptr<const Model> GetModel(const std::string &name);
 private:
-	void TryLoadModel_(const std::string &name);
+	static void TryLoadModel_(const std::string &name);
 
-	std::map<std::string, std::shared_ptr<const Model>> models_;
+	static std::map<std::string, std::shared_ptr<const Model>> models_;
 };
 
 #endif

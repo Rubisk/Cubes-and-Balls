@@ -11,7 +11,7 @@ struct Box {
 };
 
 void WrapBox(shared_ptr<Object> target, Box &outputBox, int axis) {
-	// TODO implement wrapbox
+	shared_ptr<const Model> model = target->GetModel();
 }
 
 }

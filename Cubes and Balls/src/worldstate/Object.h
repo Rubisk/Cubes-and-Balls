@@ -5,13 +5,14 @@
 
 #include "glm/glm.hpp"
 
+#include "../ModelLoader.h"
 #include "Orientation.h"
 
 // This class and it's access functions are all thread-safe.
 class Object :
 	public Orientation {
 public:
-	virtual std::string GetModelName() const;
+	virtual std::shared_ptr<const Model> GetModel() const;
 
 	virtual glm::vec3 GetModelScale() const ;
 

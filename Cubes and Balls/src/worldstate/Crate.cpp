@@ -2,8 +2,8 @@
 
 using namespace std;
 
-string Crate::GetModelName() const {
-	return "crate";
+shared_ptr<const Model> Crate::GetModel() const {
+	return ModelLoader::GetModel("crate");
 }
 
 float Crate::GetWeight() const {

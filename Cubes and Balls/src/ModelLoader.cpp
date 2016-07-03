@@ -12,6 +12,8 @@
 using namespace std;
 using namespace glm;
 
+map<string, shared_ptr<const Model>> ModelLoader::models_;
+
 shared_ptr<const Model> ModelLoader::GetModel(const string &name) {
 	if (models_.find(name) == models_.end()) {
 		TryLoadModel_(name);

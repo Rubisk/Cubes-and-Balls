@@ -10,7 +10,7 @@
 
 class ModelRenderer {
 public:
-	void DrawModel(const std::string &modelName);
+	void DrawModel(std::shared_ptr<const Model> model);
 
 	~ModelRenderer();
 private:
@@ -25,8 +25,9 @@ private:
 		GLvoid* location;
 	};
 
-	GLModelState GetGLModelState_(const std::string &modelName);
-	std::map<std::string, GLModelState> stateBuffer_;
+	GLModelState GetGLModelState_(std::shared_ptr<const Model> model);
+
+	std::map<std::shared_ptr<const Model>, GLModelState> stateBuffer_;
 	ModelLoader modelLoader_;
 
 	std::queue<GLuint> buffersToDelete_;

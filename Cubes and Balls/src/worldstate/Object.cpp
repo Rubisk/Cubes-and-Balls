@@ -8,8 +8,8 @@ using namespace glm;
 
 mutex positionmtx;
 
-string Object::GetModelName() const {
-	return "";
+shared_ptr<const Model> Object::GetModel() const {
+	return ModelLoader::GetModel("");
 }
 
 glm::vec3 Object::GetModelScale() const {

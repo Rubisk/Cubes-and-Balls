@@ -4,8 +4,8 @@
 
 using namespace std;
 
-void ModelRenderer::DrawModel(const string &modelName) {
-	GLModelState state = GetGLModelState_(modelName);
+void ModelRenderer::DrawModel(shared_ptr<const Model> model) {
+	GLModelState state = GetGLModelState_(model);
 	glBindVertexArray(state.vao);
 	glDrawElements(state.mode, state.count, GL_UNSIGNED_INT, state.location);
 	glBindVertexArray(0);
@@ -13,7 +13,7 @@ void ModelRenderer::DrawModel(const string &modelName) {
 
 ModelRenderer::~ModelRenderer() {
 	// Clean up VAO's in GLModelStates.
-	for (std::map<std::string, GLModelState>::iterator mapIt = stateBuffer_.begin();
+	for (map<shared_ptr<const Model>, GLModelState>::iterator mapIt = stateBuffer_.begin();
 		 mapIt != stateBuffer_.end(); mapIt++) {
 		glDeleteVertexArrays(1, &mapIt->second.vao);
 	}
@@ -26,9 +26,8 @@ ModelRenderer::~ModelRenderer() {
 	}
 }
 
-ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(const string &target) {
-	if (stateBuffer_.find(target) == stateBuffer_.end()) {
-		shared_ptr<const Model> model = modelLoader_.GetModel(target);
+ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(shared_ptr<const Model> model) {
+	if (stateBuffer_.find(model) == stateBuffer_.end()) {
 		GLModelState state;
 		GLuint vertexBuffer;
 		GLuint elementBuffer;
@@ -60,8 +59,8 @@ ModelRenderer::GLModelState ModelRenderer::GetGLModelState_(const string &target
 
 		glBindVertexArray(0);
 
-		stateBuffer_[target] = state;
+		stateBuffer_[model] = state;
 
 	}
-	return  stateBuffer_[target];
+	return  stateBuffer_[model];
 }

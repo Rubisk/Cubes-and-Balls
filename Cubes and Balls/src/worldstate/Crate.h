@@ -9,8 +9,8 @@
 class Crate :
 	public Entity {
 public:
-	virtual std::string GetModelName() const;
-	
+	std::shared_ptr<const Model> GetModel() const;
+
 	virtual float GetWeight() const;
 };
 
