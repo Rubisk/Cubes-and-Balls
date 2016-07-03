@@ -13,6 +13,8 @@
 // Every vertex is made of 6 coordinates, 3 representing the point and 3 representing the normal vertex for that face,
 // which is necessary for lighting the objects.
 struct Model {
+	float minRadius = 0;
+	float maxRadius = 0;
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> elements;
 };

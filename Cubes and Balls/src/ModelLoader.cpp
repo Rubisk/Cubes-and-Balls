@@ -37,6 +37,11 @@ void ModelLoader::TryLoadModel_(const string &name) {
 		switch (first) {
 		case '#':
 			continue;
+		case 'r':
+		{
+			lineStream >> model.minRadius >> model.maxRadius;
+			break;
+		}
 		case 'v':
 		{
 			// x, y, z are the position, nx, ny, nz are the normal vertex.
