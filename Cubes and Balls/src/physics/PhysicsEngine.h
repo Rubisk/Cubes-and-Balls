@@ -7,6 +7,8 @@
 #include "EntityUpdater.h"
 #include "ForceApplier.h"
 #include "ForceGenerator.h"
+#include "CollisionDetector.h"
+
 
 class PhysicsEngine {
 public:
@@ -22,6 +24,7 @@ public:
 
 	EntityUpdater entityUpdater;
 	ForceApplier forceApplier;
+	CollisionDetector collisionDetector;
 private:
 	static void Loop_(PhysicsEngine *e, int loopsPerSecond);
 

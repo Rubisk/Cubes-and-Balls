@@ -12,6 +12,7 @@ void PhysicsEngine::Start(weak_ptr<WorldState> world, int updatesPerSecond) {
 	shouldStop_ = false;
 	thread_ = new thread(PhysicsEngine::Loop_, this, updatesPerSecond);
 	entityUpdater.SetWorldState(world);
+	collisionDetector.SetWorldState(world);
 }
 
 void PhysicsEngine::Stop() {
