@@ -172,7 +172,7 @@ void CollisionDetector::SetWorldState(shared_ptr<WorldState> world) {
 bool CollisionDetector::IsColliding(shared_ptr<Object> toTest, vec3 &outputCenterOfCollision, shared_ptr<Object> &outputCollider) {
 	if (world_ == nullptr) return false;
 	vec3 centerOfCollision;
-	for (shared_ptr<Object> object : world_->GetObjects()) {
+	for (shared_ptr<Object> object : world_->GetObjectsInSphere(toTest->GetPosition(), toTest->GetModel()->maxRadius)) {
 		if (object == toTest) continue;
 		if (Colliding(object, toTest, centerOfCollision)) {
 			outputCollider = object;
