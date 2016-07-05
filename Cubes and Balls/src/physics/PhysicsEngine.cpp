@@ -41,7 +41,7 @@ void PhysicsEngine::Tick_(float timePassed) {
 		vec3 outputOfCollision;
 		shared_ptr<Object> collider;
 
-		if (collisionDetector.IsColliding(e, outputOfCollision, collider)) {
+		if (collisionDetector.IsCollidingQ(e, outputOfCollision, collider)) {
 		}
 	}
 	forceApplier.UpdateForces(timePassed);

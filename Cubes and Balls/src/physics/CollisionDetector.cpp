@@ -194,12 +194,12 @@ void CollisionDetector::SetWorldState(shared_ptr<WorldState> world) {
 	world_ = world;
 }
 
-bool CollisionDetector::IsColliding(std::shared_ptr<Object> toTest, Collision &outputCollission) {
+bool CollisionDetector::IsCollidingQ(std::shared_ptr<Object> toTest, Collision &outputCollission) {
 	if (world_ == nullptr) return false;
 	Collision outputCollission_;
 	for (shared_ptr<Object> object : world_->GetObjectsInSphere(toTest->GetPosition(), toTest->GetModel()->maxRadius)) {
 		if (object == toTest) continue;
-		if (Colliding(object, toTest, outputCollission_)) {
+		if (CollidingQ(object, toTest, outputCollission_)) {
 			outputCollission = outputCollission_;
 			return true;
 		}
@@ -207,7 +207,7 @@ bool CollisionDetector::IsColliding(std::shared_ptr<Object> toTest, Collision &o
 	return false;
 }
 
-bool CollisionDetector::Colliding(shared_ptr<Object> first, shared_ptr<Object> second, Collision &outputCollission) {
+bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> second, Collision &outputCollission) {
 	Box box;
 	box.min = vec3(-10, -10, -10); // TODO setup proper min/maxing for object size.
 	box.max = vec3(10, 10, 10);

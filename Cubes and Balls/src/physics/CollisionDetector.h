@@ -23,9 +23,9 @@ class CollisionDetector {
 public:
 	void SetWorldState(std::shared_ptr<WorldState> world);
 
-	bool IsColliding(std::shared_ptr<Object> toTest, Collision &outputCollission);
+	bool IsCollidingQ(std::shared_ptr<Object> toTest, Collision &outputCollission);
 
-	bool Colliding(std::shared_ptr<Object> first, std::shared_ptr<Object> second, Collision &outputCollission);
+	bool CollidingQ(std::shared_ptr<Object> first, std::shared_ptr<Object> second, Collision &outputCollission);
 private:
 	std::shared_ptr<WorldState> world_;
 };
