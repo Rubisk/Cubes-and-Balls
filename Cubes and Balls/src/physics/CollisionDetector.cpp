@@ -41,7 +41,7 @@ vec3 SwapAxi(const vec3 &target, int newZ) {
 }
 
 // Load 3 vertices from model data representing the face.
-Face GetFaceFromModel(shared_ptr<const Model> model, int faceNumber, const mat4 &transform) {
+Face GetFacePositionVerticesFromModel(shared_ptr<const Model> model, int faceNumber, const mat4 &transform) {
 	Face face;
 	// TODO introduce proper vertex data size constants etc.
 	int faceIndex = faceNumber * 3;
@@ -59,6 +59,24 @@ Face GetFaceFromModel(shared_ptr<const Model> model, int faceNumber, const mat4 
 	face.p3 = vec3(transform * vec4(face.p3, 1));
 
 	return face;
+}
+
+// Loads the normal data from a face of a model.
+vec3 GetFaceNormalFromModel(shared_ptr<const Model> model, int faceNumber) {
+	int faceIndex = faceNumber * 3;
+	int pos = model->elements[faceIndex] * 6 + 3;
+	return vec3(model->vertices[pos], model->vertices[pos + 1], model->vertices[pos + 2]);
+}
+
+// Given a model, and a bool array of the faces colliding, 
+// returns the direction of impact of the collision (inverted interpolation of normals of faces).
+vec3 GetCollisionDirection(shared_ptr<const Model> model, const vector<bool> &faces) {
+	vec3 normalSum;
+	for (int i = 0; i < faces.size(); i++) {
+		if (!faces[i]) continue;
+		normalSum += GetFaceNormalFromModel(model, i);
+	}
+	return -normalize(normalSum);
 }
 
 // Use this to find the value of a model face at a 2d point.
@@ -176,21 +194,20 @@ void CollisionDetector::SetWorldState(shared_ptr<WorldState> world) {
 	world_ = world;
 }
 
-bool CollisionDetector::IsColliding(shared_ptr<Object> toTest, vec3 &outputCenterOfCollision, shared_ptr<Object> &outputCollider) {
+bool CollisionDetector::IsColliding(std::shared_ptr<Object> toTest, Collision &outputCollission) {
 	if (world_ == nullptr) return false;
-	vec3 centerOfCollision;
+	Collision outputCollission_;
 	for (shared_ptr<Object> object : world_->GetObjectsInSphere(toTest->GetPosition(), toTest->GetModel()->maxRadius)) {
 		if (object == toTest) continue;
-		if (Colliding(object, toTest, centerOfCollision)) {
-			outputCollider = object;
-			outputCenterOfCollision = centerOfCollision;
+		if (Colliding(object, toTest, outputCollission_)) {
+			outputCollission = outputCollission_;
 			return true;
 		}
 	}
 	return false;
 }
 
-bool CollisionDetector::Colliding(shared_ptr<Object> first, shared_ptr<Object> second, vec3 &outputCenterOfCollision) {
+bool CollisionDetector::Colliding(shared_ptr<Object> first, shared_ptr<Object> second, Collision &outputCollission) {
 	Box box;
 	box.min = vec3(-10, -10, -10); // TODO setup proper min/maxing for object size.
 	box.max = vec3(10, 10, 10);
@@ -201,8 +218,8 @@ bool CollisionDetector::Colliding(shared_ptr<Object> first, shared_ptr<Object> s
 	mat4 secondTransform = second->LocalToWorldSpaceMatrix();
 	int firstModelNumberOfFaces = firstModel->elements.size() / 3;
 	int secondModelNumberOfFaces = secondModel->elements.size() / 3;
-	std::vector<bool> firstFacesInBounds = std::vector<bool>(firstModelNumberOfFaces, true);
-	std::vector<bool> secondFacesInBounds = std::vector<bool>(secondModelNumberOfFaces, true);
+	vector<bool> firstFacesInBounds = vector<bool>(firstModelNumberOfFaces, true);
+	vector<bool> secondFacesInBounds = vector<bool>(secondModelNumberOfFaces, true);
 
 	while (box.min.x < box.max.x && box.min.y < box.max.y && box.min.z < box.max.z) {
 		Box newBox;
@@ -210,7 +227,7 @@ bool CollisionDetector::Colliding(shared_ptr<Object> first, shared_ptr<Object> s
 		newBox.max = box.min;
 		for (int i = 0; i < firstModelNumberOfFaces; i++) {
 			if (!firstFacesInBounds[i]) continue;
-			Face face = GetFaceFromModel(firstModel, i, firstTransform);
+			Face face = GetFacePositionVerticesFromModel(firstModel, i, firstTransform);
 			firstFacesInBounds[i] = ExpandBoxToFace(face, box, newBox);
 		}
 		box = newBox;
@@ -219,12 +236,16 @@ bool CollisionDetector::Colliding(shared_ptr<Object> first, shared_ptr<Object> s
 		newBox.max = box.min;
 		for (int i = 0; i < secondModelNumberOfFaces ; i++) {
 			if (!firstFacesInBounds[i]) continue;
-			Face face = GetFaceFromModel(secondModel, i, firstTransform);
+			Face face = GetFacePositionVerticesFromModel(secondModel, i, firstTransform);
 			firstFacesInBounds[i] = ExpandBoxToFace(face, box, newBox);
 		}
 		box = newBox;
 		if (newBox.min == box.min && newBox.max == box.max) {
-			outputCenterOfCollision = 0.5f * (box.min + box.max);
+			outputCollission.first = first;
+			outputCollission.second = second;
+			outputCollission.worldPosition = 0.5f * (box.min + box.max);
+			outputCollission.impactDirectionAtFirst = GetCollisionDirection(firstModel, firstFacesInBounds);
+			outputCollission.impactDirectionAtSecond = GetCollisionDirection(secondModel, secondFacesInBounds);
 			return true;
 		}
 		box = newBox;
