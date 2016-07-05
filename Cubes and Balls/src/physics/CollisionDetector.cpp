@@ -21,6 +21,12 @@ struct Box {
 	vec3 max;
 };
 
+struct Face {
+	vec3 p1;
+	vec3 p2;
+	vec3 p3;
+};
+
 vec3 SwapAxi(const vec3 &target, int newZ) {
 	switch (newZ) {
 	case 0:
@@ -32,6 +38,27 @@ vec3 SwapAxi(const vec3 &target, int newZ) {
 	default:
 		throw std::runtime_error("Axis should be in (0, 1, 2).");
 	}
+}
+
+// Load 3 vertices from model data representing the face.
+Face GetFaceFromModel(shared_ptr<const Model> model, int faceNumber, const mat4 &transform) {
+	Face face;
+	// TODO introduce proper vertex data size constants etc.
+	int faceIndex = faceNumber * 3;
+
+	int v1Pos = model->elements[faceIndex] * 6;
+	int v2Pos = model->elements[faceIndex + 1] * 6;
+	int v3Pos = model->elements[faceIndex + 2] * 6;
+
+	face.p1 = vec3(model->vertices[v1Pos], model->vertices[v1Pos + 1], model->vertices[v1Pos + 2]);
+	face.p2 = vec3(model->vertices[v2Pos], model->vertices[v2Pos + 1], model->vertices[v2Pos + 2]);
+	face.p3 = vec3(model->vertices[v3Pos], model->vertices[v3Pos + 1], model->vertices[v3Pos + 2]);
+
+	face.p1 = vec3(transform * vec4(face.p1, 1));
+	face.p2 = vec3(transform * vec4(face.p2, 1));
+	face.p3 = vec3(transform * vec4(face.p3, 1));
+
+	return face;
 }
 
 // Use this to find the value of a model face at a 2d point.
@@ -67,103 +94,83 @@ bool GetValueAtIntersection(const vec3 &v1, const vec3 &v2, const vec3 &v3,
 	return GetValueAtPoint(v1, v2, v3, intersection.x, intersection.y, outputZ);
 }
 
-// Wraps a box around an object, as small as possible.
-void WrapBox(shared_ptr<Object> target, Box &outputBox) {
-	shared_ptr<const Model> model = target->GetModel();
-	mat4 transform = target->LocalToWorldSpaceMatrix();
+// Expands boxToExpand so the portion of the face that is within bounds all fits in boxToExpand.
+// Returns true if there is any bit of face in bounds, and false otherwise.
+bool ExpandBoxToFace(const Face &face, const Box &bounds, Box &boxToExpand) {
+	for (int axis = 0; axis < 3; axis++) {
+		// Swap axi so we don't have to worry about changing our x/y/z per direction we're looking at.
+		vec3 swappedv1 = SwapAxi(face.p1, axis);
+		vec3 swappedv2 = SwapAxi(face.p2, axis);
+		vec3 swappedv3 = SwapAxi(face.p3, axis);
 
-	vec3 v1, v2, v3;
-	Box output;
-	// If the object's minimum is higher than the original boxes maximum, 
-	// the box gets shrinked to nothing. Same for maximum.
-	output.min = outputBox.max;
-	output.max = outputBox.min;
+		vec3 boxMin = SwapAxi(boxToExpand.min, axis);
+		vec3 boxMax = SwapAxi(boxToExpand.max, axis);
 
-	// Go over all vertices, and get their min/max x, y, z values.
-	// Then take the minimum over all minima, and maximum over all maxima.
-	std::vector<GLuint>::const_iterator it = model->elements.begin();
-	while (it != model->elements.end()) {
-		// Load 3 vertices from model data representing the face.
-		v1 = vec3(model->vertices[6 * *it], model->vertices[6 * *it + 1], model->vertices[6 * *it + 2]);
-		it++;
-		v2 = vec3(model->vertices[6 * *it], model->vertices[6 * *it + 1], model->vertices[6 * *it + 2]);
-		it++;
-		v3 = vec3(model->vertices[6 * *it], model->vertices[6 * *it + 1], model->vertices[6 * *it + 2]);
-		it++;
+		// We know from calculus that the minimum/maximum z is at either:
+		// A corner of the face
+		// A corner of the (x, y) square we're looking in.
+		// An intersection of the face edge with the square edge.
 
-		// The vertices in model are in local space, but the box is in world space.
-		v1 = vec3(transform * vec4(v1, 1));
-		v2 = vec3(transform * vec4(v2, 1));
-		v3 = vec3(transform * vec4(v3, 1));
-
-		for (int axis = 0; axis < 3; axis++) {
-			// Swap axi so we don't have to worry about changing our x/y/z per direction we're looking at.
-			vec3 swappedv1 = SwapAxi(v1, axis);
-			vec3 swappedv2 = SwapAxi(v2, axis);
-			vec3 swappedv3 = SwapAxi(v3, axis);
-
-			vec3 boxMin = SwapAxi(outputBox.min, axis);
-			vec3 boxMax = SwapAxi(outputBox.max, axis);
-
-			// We know from calculus that the minimum/maximum z is at either:
-			// A corner of the face
-			// A corner of the (x, y) square we're looking in.
-			// An intersection of the face edge with the square edge.
-
-			float outputZ;
-			// Face corners.
-			for (vec3 faceCorner : {swappedv1, swappedv2, swappedv3}) {
-				if (faceCorner.x > boxMax.x || faceCorner.x < boxMin.x ||
-					faceCorner.y > boxMax.y || faceCorner.y < boxMin.y) continue;
-				if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, faceCorner.x, faceCorner.y, outputZ)) {
-					if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-					if (outputZ > output.max[axis]) output.max[axis] = outputZ;
-				}
+		float outputZ;
+		float inBox = false;
+		// Face corners.
+		for (vec3 faceCorner : {swappedv1, swappedv2, swappedv3}) {
+			if (faceCorner.x > boxMax.x || faceCorner.x < boxMin.x ||
+				faceCorner.y > boxMax.y || faceCorner.y < boxMin.y) continue;
+			if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, faceCorner.x, faceCorner.y, outputZ)) {
+				inBox = true;
+				if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
+				if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 			}
+		}
 
-			// Box corners.
-			for (float x : {boxMin.x, boxMax.x}) {
-				for (float y : {boxMin.y, boxMax.y}) {
-					if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, x, y, outputZ)) {
-						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
-					}
-				}
-			}
-
-			// Intersections
-			for (vec3 corner1 : {swappedv1, swappedv2, swappedv3}) {
-				for (vec3 corner2 : {swappedv1, swappedv2, swappedv3}) {
-					if (vec2(corner1) == vec2(corner2)) continue;
-					// Seperate code for each of the 4 box-edges since those are to ugly to iterate on.
-					if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
-											   vec2(boxMin), vec2(boxMin.x, boxMax.y), outputZ)) {
-						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
-					}
-					if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
-											   vec2(boxMin), vec2(boxMax.x, boxMin.y), outputZ)) {
-						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
-					}
-					if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
-											   vec2(boxMax), vec2(boxMin.x, boxMax.y), outputZ)) {
-						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
-					}
-					if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
-											   vec2(boxMax), vec2(boxMax.x, boxMin.y), outputZ)) {
-						if (outputZ < output.min[axis]) output.min[axis] = outputZ;
-						if (outputZ > output.max[axis]) output.max[axis] = outputZ;
-					}
+		// Box corners.
+		for (float x : {boxMin.x, boxMax.x}) {
+			for (float y : {boxMin.y, boxMax.y}) {
+				if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, x, y, outputZ)) {
+					inBox = true;
+					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
+					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 				}
 			}
 		}
+
+		// Intersections
+		for (vec3 corner1 : {swappedv1, swappedv2, swappedv3}) {
+			for (vec3 corner2 : {swappedv1, swappedv2, swappedv3}) {
+				if (vec2(corner1) == vec2(corner2)) continue;
+				// Seperate code for each of the 4 box-edges since those are to ugly to iterate on.
+				if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
+										   vec2(boxMin), vec2(boxMin.x, boxMax.y), outputZ)) {
+					inBox = true;
+					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
+					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
+				}
+				if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
+										   vec2(boxMin), vec2(boxMax.x, boxMin.y), outputZ)) {
+					inBox = true;
+					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
+					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
+				}
+				if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
+										   vec2(boxMax), vec2(boxMin.x, boxMax.y), outputZ)) {
+					inBox = true;
+					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
+					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
+				}
+				if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
+										   vec2(boxMax), vec2(boxMax.x, boxMin.y), outputZ)) {
+					inBox = true;
+					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
+					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
+				}
+			}
+		}
+		return inBox;
 	}
-	outputBox = output;
 }
 
-}
+} // namespace
 
 void CollisionDetector::SetWorldState(shared_ptr<WorldState> world) {
 	world_ = world;
@@ -187,10 +194,35 @@ bool CollisionDetector::Colliding(shared_ptr<Object> first, shared_ptr<Object> s
 	Box box;
 	box.min = vec3(-10, -10, -10); // TODO setup proper min/maxing for object size.
 	box.max = vec3(10, 10, 10);
+
+	shared_ptr<const Model> firstModel = first->GetModel();
+	shared_ptr<const Model> secondModel = second->GetModel();
+	mat4 firstTransform = first->LocalToWorldSpaceMatrix();
+	mat4 secondTransform = second->LocalToWorldSpaceMatrix();
+	int firstModelNumberOfFaces = firstModel->elements.size() / 3;
+	int secondModelNumberOfFaces = secondModel->elements.size() / 3;
+	std::vector<bool> firstFacesInBounds = std::vector<bool>(firstModelNumberOfFaces, true);
+	std::vector<bool> secondFacesInBounds = std::vector<bool>(secondModelNumberOfFaces, true);
+
 	while (box.min.x < box.max.x && box.min.y < box.max.y && box.min.z < box.max.z) {
-		Box newBox = box;
-		WrapBox(first, newBox);
-		WrapBox(second, newBox);
+		Box newBox;
+		newBox.min = box.max;
+		newBox.max = box.min;
+		for (int i = 0; i < firstModelNumberOfFaces; i++) {
+			if (!firstFacesInBounds[i]) continue;
+			Face face = GetFaceFromModel(firstModel, i, firstTransform);
+			firstFacesInBounds[i] = ExpandBoxToFace(face, box, newBox);
+		}
+		box = newBox;
+
+		newBox.min = box.max;
+		newBox.max = box.min;
+		for (int i = 0; i < secondModelNumberOfFaces ; i++) {
+			if (!firstFacesInBounds[i]) continue;
+			Face face = GetFaceFromModel(secondModel, i, firstTransform);
+			firstFacesInBounds[i] = ExpandBoxToFace(face, box, newBox);
+		}
+		box = newBox;
 		if (newBox.min == box.min && newBox.max == box.max) {
 			outputCenterOfCollision = 0.5f * (box.min + box.max);
 			return true;
