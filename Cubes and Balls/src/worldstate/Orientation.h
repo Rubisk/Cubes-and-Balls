@@ -12,6 +12,8 @@
 // This class and it's access functions are all thread-safe.
 class Orientation {
 public:
+	Orientation(const Orientation &toCopy);
+
 	// Rotate an orientation along axis
 	void Rotate(const glm::vec3 &axis, float radians);
 

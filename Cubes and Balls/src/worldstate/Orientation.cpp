@@ -6,6 +6,12 @@
 using namespace glm;
 using namespace std;
 
+Orientation::Orientation(const Orientation &toCopy) {
+	vec3 upSide = toCopy.GetUpSide();
+	vec3 frontSide = toCopy.GetFrontSide();
+	WriteUpFrontSide(frontSide, upSide);
+}
+
 void Orientation::Rotate(const vec3 &axis, float radians) {
 	if (radians == 0.0f) return;
 	vec3 upSide = rotate(GetUpSide(), radians, axis);

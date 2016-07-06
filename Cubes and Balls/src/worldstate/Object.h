@@ -13,6 +13,8 @@
 class Object :
 	public Orientation {
 public:
+	Object(const Object &toCopy);
+
 	virtual std::shared_ptr<const Model> GetModel() const;
 
 	virtual glm::vec3 GetModelScale() const ;

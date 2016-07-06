@@ -3,6 +3,13 @@
 using namespace std;
 using namespace glm;
 
+Entity::Entity(const Entity &toCopy)
+	: Object(toCopy) {
+	SetSpeed(toCopy.GetSpeed());
+	SetRotationAxis(toCopy.GetRotationAxis());
+	SetRotationSpeed(toCopy.GetRotationSpeed());
+}
+
 float Entity::GetWeight() const {
 	return 0.0f;
 }

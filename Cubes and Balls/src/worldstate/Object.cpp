@@ -6,6 +6,11 @@
 using namespace std;
 using namespace glm;
 
+Object::Object(const Object &toCopy) 
+	: Orientation(toCopy) {
+	SetPosition(toCopy.GetPosition());
+}
+
 shared_ptr<const Model> Object::GetModel() const {
 	return ModelLoader::GetModel("");
 }
