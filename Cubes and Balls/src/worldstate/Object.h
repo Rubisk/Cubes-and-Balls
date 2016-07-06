@@ -13,6 +13,8 @@
 class Object :
 	public Orientation {
 public:
+	Object() {};
+
 	Object(const Object &toCopy);
 
 	virtual std::shared_ptr<const Model> GetModel() const;

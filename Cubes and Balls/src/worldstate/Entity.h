@@ -13,6 +13,8 @@
 class Entity : 
 	public Object {
 public:
+	Entity() {};
+
 	Entity(const Entity &toCopy);
 
 	virtual float GetWeight() const;
