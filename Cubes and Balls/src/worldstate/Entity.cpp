@@ -1,54 +1,47 @@
 #include "Entity.h"
 
-#include <mutex>
-
 using namespace std;
 using namespace glm;
-
-
-mutex speedmtx;
-mutex rotationAxismtx;
-mutex rotationSpeedmtx;
 
 float Entity::GetWeight() const {
 	return 0.0f;
 }
 
 vec3 Entity::GetSpeed() const {
-	speedmtx.lock();
+	speedmtx_.lock();
 	vec3 speed = speed_;
-	speedmtx.unlock();
+	speedmtx_.unlock();
 	return speed;
 }
 
 void Entity::SetSpeed(const vec3 &speed) {
-	speedmtx.lock();
+	speedmtx_.lock();
 	speed_ = speed;
-	speedmtx.unlock();
+	speedmtx_.unlock();
 }
 
 vec3 Entity::GetRotationAxis() const {
-	rotationAxismtx.lock();
+	rotationAxismtx_.lock();
 	vec3 rotationAxis = rotationAxis_;
-	rotationAxismtx.unlock();
+	rotationAxismtx_.unlock();
 	return rotationAxis;
 }
 
 void Entity::SetRotationAxis(const vec3 & axis) {
-	rotationAxismtx.lock();
+	rotationAxismtx_.lock();
 	rotationAxis_ = axis;
-	rotationAxismtx.unlock();
+	rotationAxismtx_.unlock();
 }
 
 float Entity::GetRotationSpeed() const {
-	rotationSpeedmtx.lock();
+	rotationSpeedmtx_.lock();
 	float rotationSpeed = rotationSpeed_;
-	rotationSpeedmtx.unlock();
+	rotationSpeedmtx_.unlock();
 	return rotationSpeed;
 }
 
 void Entity::SetRotationSpeed(float radians) {
-	rotationSpeedmtx.lock();
+	rotationSpeedmtx_.lock();
 	rotationSpeed_ = radians;
-	rotationSpeedmtx.unlock();
+	rotationSpeedmtx_.unlock();
 }

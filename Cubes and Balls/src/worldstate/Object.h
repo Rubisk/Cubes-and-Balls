@@ -2,6 +2,7 @@
 #define CUBES_AND_BALLS_SRC_WORDSTATE_OBJECT_H_
 
 #include <string>
+#include <mutex>
 
 #include "glm/glm.hpp"
 
@@ -26,6 +27,7 @@ public:
 
 	virtual ~Object();
 private:
+	mutable std::mutex positionmtx_;
 	glm::vec3 position_ = glm::vec3(0, 0, 0);
 };
 

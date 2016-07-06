@@ -1,6 +1,8 @@
 #ifndef CUBES_AND_BALLS_SRC_WORLDSTATE_ORIENTATION_H_
 #define CUBES_AND_BALLS_SRC_WORLDSTATE_ORIENTATION_H_
 
+#include <mutex>
+
 #include "glm/glm.hpp"
 
 // Data type used to represent orientations of objects.
@@ -23,6 +25,8 @@ public:
 
 	virtual ~Orientation();
 private:
+	mutable std::mutex orientationmtx_;
+
 	void WriteUpFrontSide(const glm::vec3 &frontSide, const glm::vec3 &upSide);
 
 	glm::vec3 frontSide_ = glm::vec3(0, 0, 1);

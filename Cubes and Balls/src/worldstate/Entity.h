@@ -2,6 +2,7 @@
 #define CUBES_AND_BALLS_SRC_WORLDSTATE_ENTITY_H_
 
 #include <string>
+#include <mutex>
 
 #include "glm/glm.hpp"
 
@@ -28,6 +29,11 @@ public:
 
 	virtual ~Entity() {};
 private:
+
+	mutable std::mutex speedmtx_;
+	mutable std::mutex rotationAxismtx_;
+	mutable std::mutex rotationSpeedmtx_;
+
 	glm::vec3 speed_ = glm::vec3(0, 0, 0);     // units/sec
 
 	glm::vec3 rotationAxis_ = glm::vec3(0, 1, 0);

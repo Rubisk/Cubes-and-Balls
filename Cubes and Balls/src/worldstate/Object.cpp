@@ -6,8 +6,6 @@
 using namespace std;
 using namespace glm;
 
-mutex positionmtx;
-
 shared_ptr<const Model> Object::GetModel() const {
 	return ModelLoader::GetModel("");
 }
@@ -17,16 +15,16 @@ glm::vec3 Object::GetModelScale() const {
 }
 
 vec3 Object::GetPosition() const {
-	positionmtx.lock();
+	positionmtx_.lock();
 	vec3 position = position_;
-	positionmtx.unlock();
+	positionmtx_.unlock();
 	return position;
 }
 
 void Object::SetPosition(const vec3 &position) {
-	positionmtx.lock();
+	positionmtx_.lock();
 	position_ = position;
-	positionmtx.unlock();
+	positionmtx_.unlock();
 }
 
 void Object::Move(const glm::vec3 & distance) {

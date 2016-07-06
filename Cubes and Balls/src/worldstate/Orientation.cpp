@@ -1,14 +1,10 @@
 #include "Orientation.h"
 
-#include <mutex>
 
 #include "glm/gtx/rotate_vector.hpp"
 
 using namespace glm;
 using namespace std;
-
-mutex orientationmtx;
-
 
 void Orientation::Rotate(const vec3 &axis, float radians) {
 	if (radians == 0.0f) return;
@@ -54,24 +50,24 @@ void Orientation::SetFrontSide(const vec3 &f) {
 }
 
 vec3 Orientation::GetUpSide() const {
-	orientationmtx.lock();
+	orientationmtx_.lock();
 	vec3 upSide = upSide_;
-	orientationmtx.unlock();
+	orientationmtx_.unlock();
 	return upSide;
 }
 
 vec3 Orientation::GetFrontSide() const {
-	orientationmtx.lock();
+	orientationmtx_.lock();
 	vec3 frontSide = frontSide_;
-	orientationmtx.unlock();
+	orientationmtx_.unlock();
 	return frontSide;
 }
 
 Orientation::~Orientation() {}
 
 void Orientation::WriteUpFrontSide(const glm::vec3 &frontSide, const glm::vec3 &upSide) {
-	orientationmtx.lock();
+	orientationmtx_.lock();
 	upSide_ = upSide;
 	frontSide_ = frontSide;
-	orientationmtx.unlock();
+	orientationmtx_.unlock();
 }
