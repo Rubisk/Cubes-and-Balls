@@ -115,6 +115,7 @@ bool GetValueAtIntersection(const vec3 &v1, const vec3 &v2, const vec3 &v3,
 // Expands boxToExpand so the portion of the face that is within bounds all fits in boxToExpand.
 // Returns true if there is any bit of face in bounds, and false otherwise.
 bool ExpandBoxToFace(const Face &face, const Box &bounds, Box &boxToExpand) {
+	bool inBox[3];
 	for (int axis = 0; axis < 3; axis++) {
 		// Swap axi so we don't have to worry about changing our x/y/z per direction we're looking at.
 		vec3 swappedv1 = SwapAxi(face.p1, axis);
@@ -130,13 +131,13 @@ bool ExpandBoxToFace(const Face &face, const Box &bounds, Box &boxToExpand) {
 		// An intersection of the face edge with the square edge.
 
 		float outputZ;
-		float inBox = false;
+		inBox[axis] = false;
 		// Face corners.
 		for (vec3 faceCorner : {swappedv1, swappedv2, swappedv3}) {
 			if (faceCorner.x > boxMax.x || faceCorner.x < boxMin.x ||
 				faceCorner.y > boxMax.y || faceCorner.y < boxMin.y) continue;
 			if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, faceCorner.x, faceCorner.y, outputZ)) {
-				inBox = true;
+				inBox[axis] = true;
 				if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
 				if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 			}
@@ -146,7 +147,7 @@ bool ExpandBoxToFace(const Face &face, const Box &bounds, Box &boxToExpand) {
 		for (float x : {boxMin.x, boxMax.x}) {
 			for (float y : {boxMin.y, boxMax.y}) {
 				if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, x, y, outputZ)) {
-					inBox = true;
+					inBox[axis] = true;
 					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
 					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 				}
@@ -160,32 +161,32 @@ bool ExpandBoxToFace(const Face &face, const Box &bounds, Box &boxToExpand) {
 				// Seperate code for each of the 4 box-edges since those are to ugly to iterate on.
 				if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
 										   vec2(boxMin), vec2(boxMin.x, boxMax.y), outputZ)) {
-					inBox = true;
+					inBox[axis] = true;
 					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
 					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 				}
 				if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
 										   vec2(boxMin), vec2(boxMax.x, boxMin.y), outputZ)) {
-					inBox = true;
+					inBox[axis] = true;
 					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
 					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 				}
 				if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
 										   vec2(boxMax), vec2(boxMin.x, boxMax.y), outputZ)) {
-					inBox = true;
+					inBox[axis] = true;
 					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
 					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 				}
 				if (GetValueAtIntersection(swappedv1, swappedv2, swappedv3, vec2(corner1), vec2(corner2),
 										   vec2(boxMax), vec2(boxMax.x, boxMin.y), outputZ)) {
-					inBox = true;
+					inBox[axis] = true;
 					if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
 					if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 				}
 			}
 		}
-		return inBox;
 	}
+	return inBox[0] && inBox[1] && inBox[2];
 }
 
 } // namespace
@@ -216,8 +217,8 @@ bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> 
 	shared_ptr<const Model> secondModel = second->GetModel();
 	mat4 firstTransform = first->LocalToWorldSpaceMatrix();
 	mat4 secondTransform = second->LocalToWorldSpaceMatrix();
-	int firstModelNumberOfFaces = firstModel->elements.size() / 3;
-	int secondModelNumberOfFaces = secondModel->elements.size() / 3;
+	size_t firstModelNumberOfFaces = firstModel->elements.size() / 3;
+	size_t secondModelNumberOfFaces = secondModel->elements.size() / 3;
 	vector<bool> firstFacesInBounds = vector<bool>(firstModelNumberOfFaces, true);
 	vector<bool> secondFacesInBounds = vector<bool>(secondModelNumberOfFaces, true);
 
