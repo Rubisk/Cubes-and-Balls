@@ -7,16 +7,16 @@
 
 // Used as return value for collision checking
 struct Collision {
-	shared_ptr<Object> first;
-	shared_ptr<Object> second;
-	vec3 worldPosition;
+	std::shared_ptr<Object> first;
+	std::shared_ptr<Object> second;
+	glm::vec3 worldPosition;
 
 	// These are (normalized) vectors specifying which way force should be applied at collision.
 	// If (for example), the collision occurs with exactly one face, this is the opposite
 	// of the face normal. Interpolates between faces if the collision is on face edges.
 	// Note that these coordinates are in MODEL SPACE (!!!)
-	vec3 impactDirectionAtFirst;
-	vec3 impactDirectionAtSecond;
+	glm::vec3 impactDirectionAtFirst;
+	glm::vec3 impactDirectionAtSecond;
 };
 
 class CollisionDetector {

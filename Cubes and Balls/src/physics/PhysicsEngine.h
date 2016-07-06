@@ -24,7 +24,6 @@ public:
 
 	EntityUpdater entityUpdater;
 	ForceApplier forceApplier;
-	CollisionDetector collisionDetector;
 private:
 	static void Loop_(PhysicsEngine *e, int loopsPerSecond);
 

@@ -13,7 +13,6 @@ void PhysicsEngine::Start(shared_ptr<WorldState> world, int updatesPerSecond) {
 	world_ = world;
 	shouldStop_ = false;
 	entityUpdater.SetWorldState(world);
-	collisionDetector.SetWorldState(world);
 	thread_ = new thread(PhysicsEngine::Loop_, this, updatesPerSecond);
 }
 
@@ -36,13 +35,6 @@ void PhysicsEngine::Loop_(PhysicsEngine *e, int loopsPerSecond) {
 void PhysicsEngine::Tick_(float timePassed) {
 	for (shared_ptr<ForceGenerator> fg : forceGenerators_) {
 		fg->GenerateForces(forceApplier, timePassed);
-	}
-	for (shared_ptr<Entity> e : world_->GetEntities()) {
-		vec3 outputOfCollision;
-		shared_ptr<Object> collider;
-
-		if (collisionDetector.IsCollidingQ(e, outputOfCollision, collider)) {
-		}
 	}
 	forceApplier.UpdateForces(timePassed);
 	entityUpdater.UpdateEntities(timePassed);

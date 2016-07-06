@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "../worldstate/WorldState.h"
+#include "CollisionDetector.h"
 
 
 class EntityUpdater {
@@ -14,6 +15,13 @@ public:
 private:
 	void UpdateEntity_(std::shared_ptr<Entity> e, float timePassed);
 
+	void MoveEntity_(std::shared_ptr<Entity> e, float timePassed);
+
+	float EntityUpdater::MoveEntityToCollisionTime_(std::shared_ptr<Entity> e, float startTime, float endTime, Collision &outputCollision);
+
+	void ApplyForceAtCollision_(const Collision &c);
+
+	CollisionDetector collisionDetector_;
 	std::shared_ptr<WorldState> world_;
 };
 
