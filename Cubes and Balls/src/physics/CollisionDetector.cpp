@@ -248,8 +248,8 @@ bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> 
 		// Get intersection of the 2 boxes.
 		Box newBox;
 		for (int i = 0; i < 3; i++) {
-			newBox.min[i] = max(firstBox.min[i], secondBox.min[i]);
-			newBox.max[i] = min(firstBox.max[i], secondBox.max[i]);
+			newBox.min[i] = max(box.min[i], max(firstBox.min[i], secondBox.min[i]));
+			newBox.max[i] = min(box.max[i], min(firstBox.max[i], secondBox.max[i]));
 		}
 
 		if (newBox.min == box.min && newBox.max == box.max) {
