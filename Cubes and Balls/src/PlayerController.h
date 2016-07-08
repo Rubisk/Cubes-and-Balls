@@ -24,7 +24,7 @@ class PlayerController :
 public:
 	PlayerController(std::shared_ptr<Player> player);
 
-	virtual void GenerateForces(ForceApplier &forceApplier, float timePassed);
+	virtual void GenerateForces(std::shared_ptr<ForceApplier>, float timePassed);
 
 	void StartMoving(MoveDirection direction);
 

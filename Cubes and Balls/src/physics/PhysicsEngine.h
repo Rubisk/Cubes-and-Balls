@@ -12,6 +12,8 @@
 
 class PhysicsEngine {
 public:
+	PhysicsEngine();
+
 	void Start(std::shared_ptr<WorldState> world_, int updatesPerSecond);
 
 	void Stop();
@@ -22,8 +24,7 @@ public:
 
 	~PhysicsEngine();
 
-	EntityUpdater entityUpdater;
-	ForceApplier forceApplier;
+	std::shared_ptr<ForceApplier> forceApplier;
 private:
 	static void Loop_(PhysicsEngine *e, int loopsPerSecond);
 
@@ -33,6 +34,7 @@ private:
 	std::thread* thread_;
 
 	std::shared_ptr<WorldState> world_;
+	std::shared_ptr<EntityUpdater> entityUpdater_;
 	std::list<std::shared_ptr<ForceGenerator>> forceGenerators_;
 };
 

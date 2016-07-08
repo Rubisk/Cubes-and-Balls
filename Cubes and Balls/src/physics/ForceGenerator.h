@@ -9,7 +9,7 @@
 // applying forces.
 class ForceGenerator {
 public:
-	virtual void GenerateForces(ForceApplier &forceApplier, float timePassed) = 0;
+	virtual void GenerateForces(std::shared_ptr<ForceApplier> forceApplier, float timePassed) = 0;
 
 	virtual ~ForceGenerator() {};
 };

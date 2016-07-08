@@ -9,10 +9,15 @@
 using namespace std;
 using namespace glm;
 
+PhysicsEngine::PhysicsEngine() {
+	forceApplier = make_shared<ForceApplier>();
+	entityUpdater_ = make_shared<EntityUpdater>(forceApplier);
+}
+
 void PhysicsEngine::Start(shared_ptr<WorldState> world, int updatesPerSecond) {
 	world_ = world;
 	shouldStop_ = false;
-	entityUpdater.SetWorldState(world);
+	entityUpdater_->SetWorldState(world);
 	thread_ = new thread(PhysicsEngine::Loop_, this, updatesPerSecond);
 }
 
@@ -36,8 +41,8 @@ void PhysicsEngine::Tick_(float timePassed) {
 	for (shared_ptr<ForceGenerator> fg : forceGenerators_) {
 		fg->GenerateForces(forceApplier, timePassed);
 	}
-	forceApplier.UpdateForces(timePassed);
-	entityUpdater.UpdateEntities(timePassed);
+	forceApplier->UpdateForces(timePassed);
+	entityUpdater_->UpdateEntities(timePassed);
 }
 
 void PhysicsEngine::RegisterForceGenerator(shared_ptr<ForceGenerator> generator) {
@@ -48,5 +53,4 @@ void PhysicsEngine::UnRegisterForceGenerator(shared_ptr<ForceGenerator> generato
 	forceGenerators_.remove(generator);
 }
 
-PhysicsEngine::~PhysicsEngine() {
-}
+PhysicsEngine::~PhysicsEngine() {}
