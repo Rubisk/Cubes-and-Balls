@@ -60,8 +60,8 @@ void EntityUpdater::UpdateEntity_(shared_ptr<Entity> e, float timePassed) {
 void EntityUpdater::MoveEntity_(shared_ptr<Entity> e, float timePassed) {
 	e->SetPosition(e->GetSpeed() * timePassed + e->GetPosition());
 	e->SetSpeed(e->GetSpeed() * pow(0.003f, timePassed)); // TODO add friction / air resistance
-	e->SetRotationSpeed(e->GetRotationSpeed() * pow(0.001f, timePassed)); // TODO add friction / air resistance
-	e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed());
+	e->SetRotationSpeed(e->GetRotationSpeed() * pow(0.003f, timePassed)); // TODO add friction / air resistance
+	e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed() * timePassed);
 }
 
 // Moves and entity to the point where it starts colliding with another object.

@@ -61,7 +61,7 @@ void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
 	shared_ptr<Crate> crate2 = make_shared<Crate>();
 	crate->SetPosition(vec3(0.0, 1.0f, 0.0f));
-	crate2->SetPosition(vec3(0.0, -0.5f, 0.0f));
+	crate2->SetPosition(vec3(0.0, -0.5f, 0.45f));
 	crate2->SetSpeed(vec3(0, 5.5f, 0));
 	worldState_->AddEntity(crate);
 	worldState_->AddEntity(crate2);
