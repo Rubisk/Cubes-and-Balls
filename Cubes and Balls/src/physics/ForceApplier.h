@@ -22,6 +22,9 @@ public:
 		std::shared_ptr<Entity> e;
 		glm::vec3 forceVec;
 		glm::vec3 localPosition;
+
+		// Duration to apply the force. If this is 0, the force is considered to be applied during an "infinitisemal"
+		// amount of time, with total energy as if the duration was 1 second. (u physics people said it was ok)
 		float duration;
 	};
 
