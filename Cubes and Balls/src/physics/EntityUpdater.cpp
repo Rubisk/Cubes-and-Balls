@@ -6,7 +6,7 @@ using namespace std;
 using namespace glm;
 
 // Time working precision for collisions.
-const float collisionTimePrecision = 0.00000000001f;
+const float collisionTimePrecision = 0.01f;
 
 namespace {
 
@@ -15,44 +15,11 @@ vec3 GetLocalSpeedAtCollision(shared_ptr<Entity> e, vec3 collisionPointLocal, ve
 	return dot(speed, collisionDirectionLocal) * collisionDirectionLocal;
 }
 
-// Accelerates a point in local entity space with a certain speed. Local position is obviously in MODEL SPACE (!!!!)
-void AccelerateEntityAtPoint(shared_ptr<Entity> e, vec3 speedToAdd, vec3 localPosition) {
-	// TODO this code is mainly copied from forceApplier stuff, figure out a way
-	// to reuse this code properly.
-
-	// Split the force in a force that rotates the object, and one that moves the center.
-	// (I suggest sketching the picture of a sphere)
-	vec3 rotationForce;
-	if (length(localPosition) == 0) rotationForce = vec3(0, 0, 0);
-	else rotationForce = speedToAdd - dot(speedToAdd, localPosition) * speedToAdd; // Gram-Schmidt
-	vec3 centerForce = speedToAdd - rotationForce;
-
-	float weight = e->GetWeight();
-
-	// Update center movement
-	vec3 speed = e->GetSpeed();
-	speed += centerForce;
-	e->SetSpeed(speed);
-
-	// Update rotation momentum
-	vec3 oldRotationAxis = e->GetRotationAxis();
-	vec3 newRotationAxis;
-	if (length(localPosition) == 0) newRotationAxis = vec3(0, 0, 0);
-	else newRotationAxis = normalize(cross(localPosition, rotationForce));
-
-	float oldRotationSpeed = e->GetRotationSpeed();
-	float newRotationSpeed;
-	if (length(localPosition) == 0) newRotationSpeed = 0;
-	else newRotationSpeed = length(rotationForce) * length(localPosition);
-
-	vec3 totalRotationAxis = (oldRotationSpeed * oldRotationAxis + newRotationSpeed * newRotationAxis);
-	totalRotationAxis = (length(totalRotationAxis) == 0) ? totalRotationAxis : normalize(totalRotationAxis);
-
-	e->SetRotationAxis(totalRotationAxis);
-	e->SetRotationSpeed(dot(oldRotationAxis, totalRotationAxis) * oldRotationSpeed + dot(newRotationAxis, totalRotationAxis) * newRotationSpeed);
-}
-
 } // namespace 
+
+EntityUpdater::EntityUpdater(std::shared_ptr<ForceApplier> forceApplier) {
+	forceApplier_ = forceApplier;
+}
 
 void EntityUpdater::SetWorldState(shared_ptr<WorldState> world) {
 	world_ = world;
@@ -71,7 +38,11 @@ void EntityUpdater::UpdateEntity_(shared_ptr<Entity> e, float timePassed) {
 	Collision outputCollision;
 
 	float totalUpdateTime = 0;
-	float updateTimeStep = e->GetModel()->minRadius / length(speed);
+	float updateTimeStep;
+	if (e->GetModel()->minRadius && length(speed) > 0)
+		updateTimeStep = e->GetModel()->minRadius / length(speed);
+	else
+		updateTimeStep = timePassed;
 	while (totalUpdateTime < timePassed) {
 		if (totalUpdateTime + updateTimeStep > timePassed) updateTimeStep = timePassed - totalUpdateTime;
 		totalUpdateTime += updateTimeStep;
@@ -130,7 +101,7 @@ void EntityUpdater::ApplyForceAtCollision_(const Collision &c) {
 		vec3 positionLocalToSecond = vec3(inverse(transformSecond) * vec4(c.worldPosition, 1));
 
 		// Lots of speed variables here. Just calculate the absolute speed of the 2 entities
-	    // at the point of impact first. Then subtract those to figure out how fast
+		// at the point of impact first. Then subtract those to figure out how fast
 		// entity 1 is crashing into entity second. We only care about the norm of this vector,
 		// since the direction of acceleration depends on the impact direction at the model,
 		// not the way the objects are colliding themselves (this is quite tricky, draw the picture!).
@@ -148,11 +119,9 @@ void EntityUpdater::ApplyForceAtCollision_(const Collision &c) {
 		vec3 speedDifference = firstImpactSpeed - secondImpactSpeed;
 
 		float impactSpeed = length(speedDifference);
-		float firstAcceleration = impactSpeed * firstWeight / (firstWeight + secondWeight);
-		AccelerateEntityAtPoint(firstAsEntity, firstAcceleration * -c.impactDirectionAtFirst, positionLocalToFirst);
-
-		float secondAcceleration = impactSpeed * secondWeight / (firstWeight + secondWeight);
-		AccelerateEntityAtPoint(secondAsEntity, firstAcceleration * -c.impactDirectionAtFirst, positionLocalToSecond);
+		float impact = impactSpeed;
+		forceApplier_->AddForce(firstAsEntity, impact * c.impactDirectionAtFirst, positionLocalToFirst, 0);
+		forceApplier_->AddForce(secondAsEntity, impact * c.impactDirectionAtSecond, positionLocalToSecond, 0);
 	}
 	else {
 		// Make "first" the entity and "second" the object"
@@ -164,12 +133,12 @@ void EntityUpdater::ApplyForceAtCollision_(const Collision &c) {
 		// since the object is stable anyway.
 		mat4 transformFirst = c.first->LocalToWorldSpaceMatrix();
 		vec3 positionLocalToFirst = vec3(inverse(transformFirst) * vec4(c.worldPosition, 1));
-		vec3 firstImpactSpeed = vec3(transformFirst * vec4(
+		vec3 impactSpeed = vec3(transformFirst * vec4(
 			GetLocalSpeedAtCollision(firstAsEntity,
 									 positionLocalToFirst,
 									 c.impactDirectionAtFirst), 0)
 		);
-		float firstAcceleration = length(firstImpactSpeed);
-		AccelerateEntityAtPoint(firstAsEntity, firstAcceleration * -c.impactDirectionAtFirst, positionLocalToFirst);
+		float impact = length(impactSpeed) * (firstAsEntity->GetWeight());
+		forceApplier_->AddForce(firstAsEntity, impact * -c.impactDirectionAtFirst, positionLocalToFirst, 0);
 	}
 }

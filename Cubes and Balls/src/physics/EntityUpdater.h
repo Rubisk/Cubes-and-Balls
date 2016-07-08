@@ -5,10 +5,13 @@
 
 #include "../worldstate/WorldState.h"
 #include "CollisionDetector.h"
+#include "ForceApplier.h"
 
 
 class EntityUpdater {
 public:
+	EntityUpdater(std::shared_ptr<ForceApplier> forceApplier);
+
 	void SetWorldState(std::shared_ptr<WorldState> world);
 
 	void UpdateEntities(float timePassed);
@@ -22,6 +25,7 @@ private:
 	void ApplyForceAtCollision_(const Collision &c);
 
 	CollisionDetector collisionDetector_;
+	std::shared_ptr<ForceApplier> forceApplier_;
 	std::shared_ptr<WorldState> world_;
 };
 

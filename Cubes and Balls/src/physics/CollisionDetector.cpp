@@ -10,6 +10,8 @@
 #include "CollisionDetector.h"
 
 #include <chrono>
+#include <iostream>
+#include "glm/gtx/io.hpp"
 
 using namespace std;
 using namespace glm;
@@ -74,7 +76,8 @@ vec3 GetCollisionDirection(shared_ptr<const Model> model, const vector<bool> &fa
 	vec3 normalSum;
 	for (int i = 0; i < faces.size(); i++) {
 		if (!faces[i]) continue;
-		normalSum += GetFaceNormalFromModel(model, i);
+		vec3 faceNormal = GetFaceNormalFromModel(model, i);
+		normalSum += faceNormal;
 	}
 	return -normalize(normalSum);
 }
@@ -103,7 +106,7 @@ bool GetValueAtIntersection(const vec3 &v1, const vec3 &v2, const vec3 &v3,
 							const vec2 &x1, const vec2 &x2, const vec2 &y1, const vec2 &y2,
 							float &outputZ) {
 	mat2 system = {x2.x - x1.x, y1.x - y2.x,
-				   x2.y - x1.y, y1.y - y1.y};
+				   x2.y - x1.y, y1.y - y2.y};
 	if (determinant(system) == 0) return false;
 	vec2 solution = inverse(system) * vec2(y1.x - x1.x, y1.y - x1.y);
 
@@ -122,8 +125,8 @@ bool ExpandBoxToFace(const Face &face, const Box &bounds, Box &boxToExpand) {
 		vec3 swappedv2 = SwapAxi(face.p2, axis);
 		vec3 swappedv3 = SwapAxi(face.p3, axis);
 
-		vec3 boxMin = SwapAxi(boxToExpand.min, axis);
-		vec3 boxMax = SwapAxi(boxToExpand.max, axis);
+		vec3 boxMin = SwapAxi(bounds.min, axis);
+		vec3 boxMax = SwapAxi(bounds.max, axis);
 
 		// We know from calculus that the minimum/maximum z is at either:
 		// A corner of the face
@@ -136,11 +139,10 @@ bool ExpandBoxToFace(const Face &face, const Box &bounds, Box &boxToExpand) {
 		for (vec3 faceCorner : {swappedv1, swappedv2, swappedv3}) {
 			if (faceCorner.x > boxMax.x || faceCorner.x < boxMin.x ||
 				faceCorner.y > boxMax.y || faceCorner.y < boxMin.y) continue;
-			if (GetValueAtPoint(swappedv1, swappedv2, swappedv3, faceCorner.x, faceCorner.y, outputZ)) {
-				inBox[axis] = true;
-				if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
-				if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
-			}
+			inBox[axis] = true;
+			outputZ = faceCorner.z;
+			if (outputZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputZ;
+			if (outputZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputZ;
 		}
 
 		// Box corners.
@@ -223,24 +225,33 @@ bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> 
 	vector<bool> secondFacesInBounds = vector<bool>(secondModelNumberOfFaces, true);
 
 	while (box.min.x < box.max.x && box.min.y < box.max.y && box.min.z < box.max.z) {
-		Box newBox;
-		newBox.min = box.max;
-		newBox.max = box.min;
+		// Create 2 boxes wrapping around first and second object, looking only in box.
+		Box firstBox;
+		firstBox.min = box.max;
+		firstBox.max = box.min;
 		for (int i = 0; i < firstModelNumberOfFaces; i++) {
 			if (!firstFacesInBounds[i]) continue;
 			Face face = GetFacePositionVerticesFromModel(firstModel, i, firstTransform);
-			firstFacesInBounds[i] = ExpandBoxToFace(face, box, newBox);
+			firstFacesInBounds[i] = ExpandBoxToFace(face, box, firstBox);
 		}
-		box = newBox;
 
-		newBox.min = box.max;
-		newBox.max = box.min;
+		Box secondBox;
+		secondBox.min = box.max;
+		secondBox.max = box.min;
 		for (int i = 0; i < secondModelNumberOfFaces ; i++) {
-			if (!firstFacesInBounds[i]) continue;
-			Face face = GetFacePositionVerticesFromModel(secondModel, i, firstTransform);
-			firstFacesInBounds[i] = ExpandBoxToFace(face, box, newBox);
+			if (!secondFacesInBounds[i]) continue;
+			Face face = GetFacePositionVerticesFromModel(secondModel, i, secondTransform);
+			secondFacesInBounds[i] = ExpandBoxToFace(face, box, secondBox);
 		}
-		box = newBox;
+
+
+		// Get intersection of the 2 boxes.
+		Box newBox;
+		for (int i = 0; i < 3; i++) {
+			newBox.min[i] = max(firstBox.min[i], secondBox.min[i]);
+			newBox.max[i] = min(firstBox.max[i], secondBox.max[i]);
+		}
+
 		if (newBox.min == box.min && newBox.max == box.max) {
 			outputCollission.first = first;
 			outputCollission.second = second;

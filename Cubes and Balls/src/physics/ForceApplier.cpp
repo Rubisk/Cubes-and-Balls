@@ -83,7 +83,7 @@ void ForceApplier::ApplyForce_(Force &force) {
 	// Update rotation momentum
 	vec3 oldRotationAxis = e->GetRotationAxis();
 	vec3 newRotationAxis;
-	if (length(localPosition) == 0) newRotationAxis = vec3(0, 0, 0);
+	if (length(localPosition) == 0 || length(rotationForce) == 0) newRotationAxis = vec3(0, 0, 0);
 	else newRotationAxis = normalize(cross(localPosition, rotationForce));
 	
 

@@ -54,18 +54,19 @@ void Game::Start() {
 		glfwSwapBuffers(window_);
 		glfwPollEvents();
 	}
+	Stop();
 }
 
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
 	shared_ptr<Crate> crate2 = make_shared<Crate>();
 	crate->SetPosition(vec3(0.0, 1.0f, 0.0f));
-	crate2->SetPosition(vec3(0.0, 0.5f, 0.0f));
-	crate2->Rotate(vec3(1, 0, 0), pi<float>() / 3);
+	crate2->SetPosition(vec3(0.0, -0.5f, 0.0f));
+	crate2->SetSpeed(vec3(0, 5.5f, 0));
 	worldState_->AddEntity(crate);
 	worldState_->AddEntity(crate2);
-	worldState_->player->SetPosition(vec3(0, -1, 0));
-	worldState_->player->LookAt(vec3(0, 1, 0));
+	worldState_->player->SetPosition(vec3(2, 0.25f, 0));
+	worldState_->player->LookAt(vec3(0, 0.25f, 0));
 }
 
 void Game::Stop() {
