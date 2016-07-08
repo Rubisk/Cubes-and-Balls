@@ -58,7 +58,7 @@ void ForceApplier::ApplyForce_(Force &force) {
 	// (I suggest sketching the picture of a sphere)
 	vec3 rotationForce;
 	if (length(localPosition) == 0) rotationForce = vec3(0, 0, 0);
-	else rotationForce = forceVec - dot(forceVec, localPosition) * forceVec; // Gram-Schmidt
+	else rotationForce = forceVec - dot(forceVec, normalize(localPosition)) * normalize(localPosition); // Gram-Schmidt
 	vec3 centerForce = forceVec - rotationForce;
 
 	float weight = e->GetWeight();
