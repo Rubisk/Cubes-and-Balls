@@ -125,20 +125,25 @@ void EntityUpdater::ApplyForceAtCollision_(const Collision &c) {
 	}
 	else {
 		// Make "first" the entity and "second" the object"
+		vec3 impactDirection;
 		if (secondAsEntity) {
 			firstAsEntity = secondAsEntity;
+			impactDirection = c.impactDirectionAtSecond;
+		}
+		else {
+			impactDirection = c.impactDirectionAtFirst;
 		}
 
 		// Just get the speed of impact and use all that speed to accelerate the entity
 		// since the object is stable anyway.
-		mat4 transformFirst = c.first->LocalToWorldSpaceMatrix();
+		mat4 transformFirst = firstAsEntity->LocalToWorldSpaceMatrix();
 		vec3 positionLocalToFirst = vec3(inverse(transformFirst) * vec4(c.worldPosition, 1));
 		vec3 impactSpeed = vec3(transformFirst * vec4(
 			GetLocalSpeedAtCollision(firstAsEntity,
 									 positionLocalToFirst,
-									 c.impactDirectionAtFirst), 0)
+									 impactDirection), 0)
 		);
 		float impact = length(impactSpeed) * (firstAsEntity->GetWeight());
-		forceApplier_->AddForce(firstAsEntity, impact * -c.impactDirectionAtFirst, positionLocalToFirst, 0);
+		forceApplier_->AddForce(firstAsEntity, impact * impactDirection, positionLocalToFirst, 0);
 	}
 }
