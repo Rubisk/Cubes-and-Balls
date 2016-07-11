@@ -176,6 +176,7 @@
     <ClCompile Include="src\worldstate\Entity.cpp" />
     <ClCompile Include="src\worldstate\Object.cpp" />
     <ClCompile Include="src\worldstate\Orientation.cpp" />
+    <ClCompile Include="src\worldstate\Wall.cpp" />
     <ClCompile Include="src\worldstate\WorldGravity.cpp" />
     <ClCompile Include="src\worldstate\WorldState.cpp" />
   </ItemGroup>
@@ -205,6 +206,7 @@
     <ClInclude Include="src\worldstate\Entity.h" />
     <ClInclude Include="src\worldstate\Object.h" />
     <ClInclude Include="src\worldstate\Orientation.h" />
+    <ClInclude Include="src\worldstate\Wall.h" />
     <ClInclude Include="src\worldstate\WorldGravity.h" />
     <ClInclude Include="src\worldstate\WorldState.h" />
   </ItemGroup>

@@ -59,8 +59,8 @@ void EntityUpdater::UpdateEntity_(shared_ptr<Entity> e, float timePassed) {
 // Updates entity position/rotation, simulating <timePassed> of movement.
 void EntityUpdater::MoveEntity_(shared_ptr<Entity> e, float timePassed) {
 	e->SetPosition(e->GetSpeed() * timePassed + e->GetPosition());
-	e->SetSpeed(e->GetSpeed() * pow(0.003f, timePassed)); // TODO add friction / air resistance
-	e->SetRotationSpeed(e->GetRotationSpeed() * pow(0.003f, timePassed)); // TODO add friction / air resistance
+	e->SetSpeed(e->GetSpeed()); // TODO add friction / air resistance
+	e->SetRotationSpeed(e->GetRotationSpeed()); // TODO add friction / air resistance
 	e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed() * timePassed);
 }
 

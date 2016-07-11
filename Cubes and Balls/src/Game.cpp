@@ -6,6 +6,7 @@
 #include "worldstate/WorldState.h"
 #include "worldstate/WorldGravity.h"
 #include "worldstate/Crate.h"
+#include "worldstate/Wall.h"
 #include "renderer/Renderer.h"
 #include "renderer/WorldRenderer.h"
 #include "physics/PhysicsEngine.h"
@@ -64,12 +65,13 @@ void Game::Start() {
 void Game::SetupTempWorldState() {
 	shared_ptr<Crate> crate = make_shared<Crate>();
 	shared_ptr<Crate> crate2 = make_shared<Crate>();
-	crate->SetPosition(vec3(0.0, 1.0f, 0.0f));
-	crate2->SetPosition(vec3(0.0, -0.5f, 0.45f));
+	shared_ptr<Wall> wall = make_shared<Wall>(vec3(5, 1, 5));
+	wall->SetPosition(vec3(0, -2, 0));
+	crate->SetPosition(vec3(0.0, 0.0f, 0.0f));
 	crate2->SetSpeed(vec3(0, 5.5f, 0));
 	worldState_->AddEntity(crate);
-	worldState_->AddEntity(crate2);
-	worldState_->player->SetPosition(vec3(2, 0.25f, 0));
+	worldState_->AddObject(wall);
+	worldState_->player->SetPosition(vec3(1, 2.0f, 0));
 	worldState_->player->LookAt(vec3(0, 0.25f, 0));
 }
 
