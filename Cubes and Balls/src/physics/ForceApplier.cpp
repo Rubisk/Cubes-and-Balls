@@ -69,7 +69,7 @@ void ForceApplier::ApplyForce_(Force &force) {
 	// Split the force in a force that rotates the object, and one that moves the center.
 	// (I suggest sketching the picture of a sphere)
 	vec3 rotationForce;
-	if (length(localPosition) == 0) rotationForce = vec3(0, 0, 0);
+	if (length(localPosition) < 0.00001f) rotationForce = vec3(0, 0, 0);
 	else rotationForce = forceVec - dot(forceVec, normalize(localPosition)) * normalize(localPosition); // Gram-Schmidt
 	vec3 centerForce = forceVec - rotationForce;
 
@@ -83,17 +83,17 @@ void ForceApplier::ApplyForce_(Force &force) {
 	// Update rotation momentum
 	vec3 oldRotationAxis = e->GetRotationAxis();
 	vec3 newRotationAxis;
-	if (length(localPosition) == 0 || length(rotationForce) == 0) newRotationAxis = vec3(0, 0, 0);
+	if (length(localPosition) < 0.00001f || length(rotationForce) < 0.00001f) newRotationAxis = vec3(0, 0, 0);
 	else newRotationAxis = normalize(cross(localPosition, rotationForce));
 	
 
 	float oldRotationSpeed = e->GetRotationSpeed();
 	float newRotationSpeed;
-	if (length(localPosition) == 0) newRotationSpeed = 0;
+	if (length(localPosition) < 0.00001f) newRotationSpeed = 0;
 	else newRotationSpeed = length(rotationForce) * duration / (weight * length(localPosition));
 
 	vec3 totalRotationAxis = (oldRotationSpeed * oldRotationAxis + newRotationSpeed * newRotationAxis);
-	totalRotationAxis = (length(totalRotationAxis) == 0) ? totalRotationAxis : normalize(totalRotationAxis);
+	totalRotationAxis = (length(totalRotationAxis) < 0.00001f) ? totalRotationAxis : normalize(totalRotationAxis);
 
 	e->SetRotationAxis(totalRotationAxis);
 	e->SetRotationSpeed(dot(oldRotationAxis, totalRotationAxis) * oldRotationSpeed + dot(newRotationAxis, totalRotationAxis) * newRotationSpeed);
