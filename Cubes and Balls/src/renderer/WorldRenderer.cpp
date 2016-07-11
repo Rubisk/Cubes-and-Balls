@@ -25,6 +25,7 @@ void WorldRenderer::Draw() {
 	GLuint modelUni = glGetUniformLocation(shaderProgram_, "model");
 	GLuint cameraUni = glGetUniformLocation(shaderProgram_, "camera");
 	GLuint projectionUni = glGetUniformLocation(shaderProgram_, "projection");
+	GLuint materialColorUni = glGetUniformLocation(shaderProgram_, "materialColor");
 
 	mat4 cameraMatrix = inverse(worldToRender_->player->LocalToWorldSpaceMatrix());
 	mat4 projectionMatrix = perspective(pi<float>() / 3, screenWidth_ / screenHeight_, 0.1f, 100.0f);
@@ -35,6 +36,7 @@ void WorldRenderer::Draw() {
 	for (shared_ptr<Object> o : worldToRender_->GetEntities()) {
 		mat4 object = o->LocalToWorldSpaceMatrix();
 		glUniformMatrix4fv(modelUni, 1, GL_FALSE, value_ptr(object));
+		glUniform4fv(materialColorUni, 1, value_ptr(o->GetMaterial().color));
 		modelRenderer_.DrawModel(o->GetModel());
 	}
 }

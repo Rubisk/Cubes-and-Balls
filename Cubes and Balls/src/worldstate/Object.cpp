@@ -2,13 +2,16 @@
 
 #include <mutex>
 
-
 using namespace std;
 using namespace glm;
 
 Object::Object(const Object &toCopy) 
 	: Orientation(toCopy) {
 	SetPosition(toCopy.GetPosition());
+}
+
+Material Object::GetMaterial() const {
+	return Material();
 }
 
 shared_ptr<const Model> Object::GetModel() const {

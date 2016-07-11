@@ -11,6 +11,8 @@ class Crate :
 public:
 	std::shared_ptr<const Model> GetModel() const;
 
+	virtual Material GetMaterial() const;
+
 	virtual float GetWeight() const;
 };
 

@@ -9,6 +9,10 @@
 #include "../ModelLoader.h"
 #include "Orientation.h"
 
+struct Material {
+	glm::vec4 color = glm::vec4(0, 0, 0, 1);
+};
+
 // This class and it's access functions are all thread-safe.
 class Object :
 	public Orientation {
@@ -16,6 +20,8 @@ public:
 	Object() {};
 
 	Object(const Object &toCopy);
+
+	virtual Material GetMaterial() const;
 
 	virtual std::shared_ptr<const Model> GetModel() const;
 
