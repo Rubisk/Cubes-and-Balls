@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "GL/glew.h"
+#include "glm/glm.hpp"
 
 
 // Models are used to draw by the renderer, and also used for the physics engine to detect collision.
@@ -23,8 +24,10 @@ struct Model {
 class ModelLoader {
 public:
 	static std::shared_ptr<const Model> GetModel(const std::string &name);
+
+	static std::shared_ptr<const Model> GetModel(const std::string &name, const glm::vec3 &scale);
 private:
-	static void TryLoadModel_(const std::string &name);
+	static void TryLoadModel_(const std::string &name, const glm::vec3 &scale);
 
 	static std::map<std::string, std::shared_ptr<const Model>> models_;
 };

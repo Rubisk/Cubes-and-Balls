@@ -8,6 +8,8 @@
 
 #include "GL/glew.h"
 #include "glm/glm.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtx/string_cast.hpp"
 
 using namespace std;
 using namespace glm;
@@ -15,19 +17,27 @@ using namespace glm;
 map<string, shared_ptr<const Model>> ModelLoader::models_;
 
 shared_ptr<const Model> ModelLoader::GetModel(const string &name) {
-	if (models_.find(name) == models_.end()) {
-		TryLoadModel_(name);
-	}
-	return models_[name];
+	return GetModel(name, vec3(1, 1, 1));
 }
 
-void ModelLoader::TryLoadModel_(const string &name) {
+shared_ptr<const Model> ModelLoader::GetModel(const string &name, const vec3 &scale) {
+	string modelLookup = name + to_string(scale);
+	if (models_.find(modelLookup) == models_.end()) {
+		TryLoadModel_(name, scale);
+	}
+	return models_[modelLookup];
+}
+
+void ModelLoader::TryLoadModel_(const string &name, const vec3 &scalevec) {
 	// TODO setup proper exception handling
 	string path = "res/models/" + name + ".model";
 	ifstream modelData(path);
 	string line;
 
 	Model model;
+
+	mat3 vertexScale = mat3(scale(scalevec));
+	mat3 normalScale = inverse(vertexScale);
 
 	while (getline(modelData, line)) {
 		if (line == "") continue;
@@ -47,12 +57,16 @@ void ModelLoader::TryLoadModel_(const string &name) {
 			// x, y, z are the position, nx, ny, nz are the normal vertex.
 			GLfloat x, y, z, nx, ny, nz;
 			lineStream >> x >> y >> z >> nx >> ny >> nz;
-			model.vertices.push_back(x);
-			model.vertices.push_back(y);
-			model.vertices.push_back(z);
-			model.vertices.push_back(nx);
-			model.vertices.push_back(ny);
-			model.vertices.push_back(nz);
+			vec3 position(x, y, z);
+			vec3 normal(nx, ny, nz);
+			position = vertexScale * position;
+			normal = normalScale * normal;
+			model.vertices.push_back(position.x);
+			model.vertices.push_back(position.y);
+			model.vertices.push_back(position.z);
+			model.vertices.push_back(normal.x);
+			model.vertices.push_back(normal.y);
+			model.vertices.push_back(normal.z);
 			break;
 		}
 		case 'f':
@@ -70,5 +84,5 @@ void ModelLoader::TryLoadModel_(const string &name) {
 				<< line << "\" ignoring and loading the next line.";
 		}
 	}
-	models_[name] = make_shared<const Model>(model);
+	models_[name + to_string(scalevec)] = make_shared<const Model>(model);
 }

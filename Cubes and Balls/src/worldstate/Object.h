@@ -19,8 +19,6 @@ public:
 
 	virtual std::shared_ptr<const Model> GetModel() const;
 
-	virtual glm::vec3 GetModelScale() const ;
-
 	virtual glm::vec3 GetPosition() const;
 
 	virtual void SetPosition(const glm::vec3 &position);

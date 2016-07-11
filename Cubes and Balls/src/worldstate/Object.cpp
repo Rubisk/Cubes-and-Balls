@@ -15,10 +15,6 @@ shared_ptr<const Model> Object::GetModel() const {
 	return ModelLoader::GetModel("");
 }
 
-glm::vec3 Object::GetModelScale() const {
-	return glm::vec3(1, 1, 1);
-}
-
 vec3 Object::GetPosition() const {
 	positionmtx_.lock();
 	vec3 position = position_;
