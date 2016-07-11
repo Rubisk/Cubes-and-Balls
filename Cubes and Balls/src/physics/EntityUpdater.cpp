@@ -72,11 +72,11 @@ float EntityUpdater::MoveEntityToCollisionTime_(shared_ptr<Entity> e, float star
 		float middleTime = (startTime + endTime) / 2;
 		MoveEntity_(e, middleTime - startTime);
 		if (collisionDetector_.IsCollidingQ(e, outputCollision)) {
-			startTime = middleTime;
-		}
-		else {
 			endTime = middleTime;
 			MoveEntity_(e, startTime - middleTime);
+		}
+		else {
+			startTime = middleTime;
 		}
 	}
 	return startTime;
