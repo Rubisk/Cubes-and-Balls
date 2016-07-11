@@ -50,6 +50,8 @@ void ModelLoader::TryLoadModel_(const string &name, const vec3 &scalevec) {
 		case 'r':
 		{
 			lineStream >> model.minRadius >> model.maxRadius;
+			model.minRadius *= min(min(scalevec.x, scalevec.y), scalevec.z);
+			model.maxRadius *= max(min(scalevec.x, scalevec.y), scalevec.z);
 			break;
 		}
 		case 'v':
