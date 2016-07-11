@@ -7,6 +7,10 @@
 class Player :
 	public Entity {
 public:
+	virtual std::shared_ptr<const Model> GetModel() const;
+
+	virtual Material GetMaterial() const;
+
 	void LookAt(const glm::vec3 &point);
 
 	virtual float GetWeight() const;
