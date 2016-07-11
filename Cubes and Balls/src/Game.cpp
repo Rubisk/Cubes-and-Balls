@@ -4,6 +4,7 @@
 
 #include "InputHandler.h"
 #include "worldstate/WorldState.h"
+#include "worldstate/WorldGravity.h"
 #include "worldstate/Crate.h"
 #include "renderer/Renderer.h"
 #include "renderer/WorldRenderer.h"
@@ -41,6 +42,9 @@ void Game::Setup() {
 	physics_->Start(worldState_, 60);
 	playerController = make_shared<PlayerController>(worldState_->player);
 	physics_->RegisterForceGenerator(playerController);
+
+	shared_ptr<WorldGravity> worldGravity = make_shared<WorldGravity>(worldState_, vec3(0, -1, 0));
+	physics_->RegisterForceGenerator(worldGravity);
 
 	glfwSetWindowUserPointer(window_, this);
 	
