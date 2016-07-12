@@ -9,8 +9,12 @@
 
 #include "CollisionDetector.h"
 
+#include "../worldstate/Entity.h"
+
 #include <chrono>
 #include <iostream>
+#include <memory>
+
 #include "glm/gtx/io.hpp"
 
 using namespace std;
@@ -315,20 +319,23 @@ bool CollisionDetector::IsCollidingQ(std::shared_ptr<Object> toTest, Collision &
 }
 
 bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> second, Collision &outputCollission) {
-	Box box;
-
 	shared_ptr<const Model> firstModel = first->GetModel();
 	shared_ptr<const Model> secondModel = second->GetModel();
+	shared_ptr<Entity> firstE = dynamic_pointer_cast<Entity>(first);
+	shared_ptr<Entity> secondE = dynamic_pointer_cast<Entity>(second);
 	mat4 firstTransform = first->LocalToWorldSpaceMatrix();
 	mat4 secondTransform = second->LocalToWorldSpaceMatrix();
 	size_t firstModelNumberOfFaces = firstModel->elements.size() / 3;
 	size_t secondModelNumberOfFaces = secondModel->elements.size() / 3;
 	vector<bool> firstFacesInBounds = vector<bool>(firstModelNumberOfFaces, true);
 	vector<bool> secondFacesInBounds = vector<bool>(secondModelNumberOfFaces, true);
-	float radius = max(firstModel->maxRadius, secondModel->maxRadius);
 
-	box.min = vec3(-radius);
-	box.max = vec3(radius);
+	Box box;
+	float radius = max(firstModel->maxRadius, secondModel->maxRadius);
+	for (int i = 0; i < 3; i++) {
+		box.min[i] = min(first->GetPosition()[i], second->GetPosition()[i]) - radius;
+		box.max[i] = max(first->GetPosition()[i], second->GetPosition()[i]) + radius;
+	}
 
 	while (box.min.x <= box.max.x && box.min.y <= box.max.y && box.min.z <= box.max.z) {
 		// Create 2 boxes wrapping around first and second object, looking only in box.
@@ -361,8 +368,8 @@ bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> 
 			outputCollission.first = first;
 			outputCollission.second = second;
 			outputCollission.worldPosition = 0.5f * (box.min + box.max);
-			outputCollission.impactDirectionAtFirst = GetCollisionDirection(firstModel, firstFacesInBounds);
-			outputCollission.impactDirectionAtSecond = GetCollisionDirection(secondModel, secondFacesInBounds);
+			outputCollission.impactDirectionAtSecond = -GetCollisionDirection(firstModel, firstFacesInBounds);
+			outputCollission.impactDirectionAtFirst = -GetCollisionDirection(secondModel, secondFacesInBounds);
 			return true;
 		}
 		box = newBox;
