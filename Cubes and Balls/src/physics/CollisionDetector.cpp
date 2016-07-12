@@ -18,6 +18,8 @@ using namespace glm;
 
 namespace {
 
+static const float collisionPrecision = 0.00001f;
+
 struct Box {
 	vec3 min;
 	vec3 max;
@@ -96,7 +98,7 @@ vec3 GetCollisionDirection(shared_ptr<const Model> model, const vector<bool> &fa
 // If lines are perpendicular, or don't intersect, returns false. Also returns false if lines overlap somewhere.
 // Returns true if they do intersect, and writes the intersection point to outputIntersection.
 bool GetIntersection(const Line2D &first, const Line2D &second, vec2 &outputIntersection) {
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (min(first.p1[i], first.p2[i]) > max(second.p1[i], second.p2[i])) return false;
 		if (min(second.p1[i], second.p2[i]) > max(first.p1[i], first.p2[i])) return false;
 	}
@@ -355,7 +357,7 @@ bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> 
 			newBox.max[i] = min(box.max[i], min(firstBox.max[i], secondBox.max[i]));
 		}
 
-		if (newBox.min == box.min && newBox.max == box.max) {
+		if (distance(newBox.min, box.min) < collisionPrecision && distance(newBox.max, box.max) < collisionPrecision) {
 			outputCollission.first = first;
 			outputCollission.second = second;
 			outputCollission.worldPosition = 0.5f * (box.min + box.max);
