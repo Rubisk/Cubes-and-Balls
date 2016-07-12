@@ -158,7 +158,7 @@ bool GetLineMinMaxAtPoint(const Line3D &line, vec2 point, float &outputMinZ, flo
 		vec2 solution = inverse(system) * vec2(1, point.x);
 		if (solution[0] < 0 || solution[1] < 0) return false;
 		vec3 lineAtPoint = solution[0] * line.p1 + solution[1] * line.p2;
-		if (lineAtPoint.x != point.x) return false;
+		if (abs(lineAtPoint.x - point.x) > 0.00001f) return false;
 		outputMinZ = lineAtPoint.z;
 		outputMaxZ = lineAtPoint.z;
 		return true;
