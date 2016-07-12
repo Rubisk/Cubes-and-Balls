@@ -144,6 +144,6 @@ void EntityUpdater::ApplyForceAtCollision_(const Collision &c) {
 									 impactDirection), 0)
 		);
 		float impact = length(impactSpeed) * (firstAsEntity->GetWeight());
-		forceApplier_->AddForce(firstAsEntity, impact * impactDirection, positionLocalToFirst, 0);
+		forceApplier_->AddForce(firstAsEntity, 2 * impact * impactDirection, positionLocalToFirst, 0);
 	}
 }
