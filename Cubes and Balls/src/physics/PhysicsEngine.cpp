@@ -2,12 +2,13 @@
 
 #include <ctime>
 #include <thread>
-
 #include <iostream>
+
 #include "glm/glm.hpp"
 
 using namespace std;
 using namespace glm;
+using namespace chrono;
 
 PhysicsEngine::PhysicsEngine() {
 	forceApplier = make_shared<ForceApplier>();
@@ -30,10 +31,17 @@ void PhysicsEngine::Stop() {
 
 void PhysicsEngine::Loop_(PhysicsEngine *e, int loopsPerSecond) {
 	while (!e->shouldStop_) {
-		auto start = chrono::high_resolution_clock::now();
+		auto start = high_resolution_clock::now();
 		e->Tick_(1.0f / loopsPerSecond);
-		auto end = chrono::high_resolution_clock::now();
-		this_thread::sleep_for(chrono::milliseconds((long) 1000.0f / loopsPerSecond) - (end - start));
+		auto end = high_resolution_clock::now();
+		auto timeLeft = milliseconds((long) 1000.0 / loopsPerSecond) - (end - start);
+
+		milliseconds timeLeftAsMS = duration_cast<milliseconds>(timeLeft);
+		if (timeLeftAsMS.count() < 0) {
+			cout << "Physics tick took " << -timeLeftAsMS.count() << " ms too long.";
+		}
+
+		this_thread::sleep_for(timeLeft);
 	}
 }
 
