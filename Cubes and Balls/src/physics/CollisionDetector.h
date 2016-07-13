@@ -11,12 +11,8 @@ struct Collision {
 	std::shared_ptr<Object> second;
 	glm::vec3 worldPosition;
 
-	// These are (normalized) vectors specifying which way force should be applied at collision.
-	// If (for example), the collision occurs with exactly one face, this is the opposite
-	// of the face normal. Interpolates between faces if the collision is on face edges.
-	// Note that these coordinates are in MODEL SPACE (!!!)
-	glm::vec3 impactDirectionAtFirst;
-	glm::vec3 impactDirectionAtSecond;
+	// Normalized vector specifying the direction at which the first object is crashing into the second.
+	glm::vec3 impact;
 };
 
 class CollisionDetector {

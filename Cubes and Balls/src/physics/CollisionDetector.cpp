@@ -368,8 +368,18 @@ bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> 
 			outputCollission.first = first;
 			outputCollission.second = second;
 			outputCollission.worldPosition = 0.5f * (box.min + box.max);
-			outputCollission.impactDirectionAtSecond = -GetCollisionDirection(firstModel, firstFacesInBounds);
-			outputCollission.impactDirectionAtFirst = -GetCollisionDirection(secondModel, secondFacesInBounds);
+			vec3 boxSize;
+			for (int i = 0; i < 3; i++) boxSize[i] = box.max[i] - box.min[i];
+			if (boxSize == vec3(0, 0, 0)) return false;
+			vec3 impact;
+			impact.x = boxSize.y * boxSize.z;
+			impact.y = boxSize.x * boxSize.z;
+			impact.z = boxSize.x * boxSize.y;
+			impact = normalize(impact);
+			for (int i = 0; i < 3; i++) 
+				if (first->GetPosition()[i] > second->GetPosition()[i]) 
+					impact[i] *= -1;
+			outputCollission.impact = impact;
 			return true;
 		}
 		box = newBox;
