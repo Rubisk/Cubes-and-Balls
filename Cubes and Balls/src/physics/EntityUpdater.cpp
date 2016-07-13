@@ -49,7 +49,8 @@ void EntityUpdater::UpdateEntity_(shared_ptr<Entity> e, float timePassed) {
 		MoveEntity_(e, updateTimeStep);
 		if (collisionDetector_.IsCollidingQ(e, outputCollision)) {
 			MoveEntity_(e, -updateTimeStep);
-			float timeUntilCollision = MoveEntityToCollisionTime_(e, totalUpdateTime - updateTimeStep, totalUpdateTime, outputCollision);
+			totalUpdateTime -= updateTimeStep;
+			float timeUntilCollision = MoveEntityToCollisionTime_(e, totalUpdateTime, totalUpdateTime + updateTimeStep, outputCollision);
 			ApplyForceAtCollision_(outputCollision);
 			totalUpdateTime += timeUntilCollision;
 		}
@@ -58,10 +59,18 @@ void EntityUpdater::UpdateEntity_(shared_ptr<Entity> e, float timePassed) {
 
 // Updates entity position/rotation, simulating <timePassed> of movement.
 void EntityUpdater::MoveEntity_(shared_ptr<Entity> e, float timePassed) {
-	e->SetPosition(e->GetSpeed() * timePassed + e->GetPosition());
-	e->SetSpeed(e->GetSpeed()); // TODO add friction / air resistance
-	e->SetRotationSpeed(e->GetRotationSpeed()); // TODO add friction / air resistance
-	e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed() * timePassed);
+	if (timePassed > 0) {
+		e->SetSpeed(e->GetSpeed() * pow(0.3f, timePassed)); // TODO add friction / air resistance
+		e->SetRotationSpeed(e->GetRotationSpeed()* pow(0.3f, timePassed)); // TODO add friction / air resistance
+		e->SetPosition(e->GetSpeed() * timePassed + e->GetPosition());
+		e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed() * timePassed);
+	}
+	else {
+		e->SetPosition(e->GetSpeed() * timePassed + e->GetPosition());
+		e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed() * timePassed);
+		e->SetSpeed(e->GetSpeed() * pow(0.3f, timePassed)); // TODO add friction / air resistance
+		e->SetRotationSpeed(e->GetRotationSpeed()* pow(0.3f, timePassed)); // TODO add friction / air resistance
+	}
 }
 
 // Moves and entity to the point where it starts colliding with another object.
