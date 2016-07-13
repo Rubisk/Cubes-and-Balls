@@ -6,7 +6,7 @@ using namespace std;
 using namespace glm;
 
 // Time working precision for collisions.
-const float collisionTimePrecision = 0.01f;
+const float collisionTimePrecision = 0.000001f;
 
 namespace {
 
