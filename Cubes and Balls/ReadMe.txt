@@ -1,40 +1,23 @@
-========================================================================
-    CONSOLE APPLICATION : Cubes and Balls Project Overview
-========================================================================
-
-AppWizard has created this Cubes and Balls application for you.
+# Cubes and Balls Project Overview
 
 This file contains a summary of what you will find in each of the files that
-make up your Cubes and Balls application.
+make up this application.
 
+The projects recommended build system is MSVC 2015, and support files for building are included.
 
 Cubes and Balls.vcxproj
-    This is the main project file for VC++ projects generated using an Application Wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
+    This is the MSVC main project file, which will be used to build the application.
 
 Cubes and Balls.vcxproj.filters
-    This is the filters file for VC++ projects generated using an Application Wizard. 
-    It contains information about the association between the files in your project 
-    and the filters. This association is used in the IDE to show grouping of files with
-    similar extensions under a specific node (for e.g. ".cpp" files are associated with the
-    "Source Files" filter).
+    MSVC project filter file. Read the MSVC documentation on project files to learn more: https://msdn.microsoft.com/en-us/library/2208a1f2.aspx
 
 Cubes and Balls.cpp
-    This is the main application source file.
+    This is the application entry point.
 
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
-
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named Cubes and Balls.pch and a precompiled types file named StdAfx.obj.
-
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
-
-/////////////////////////////////////////////////////////////////////////////
+src/
+    This contains all the actual code running the game. There's a world state used to store the current state of the game,
+    a renderer rendering world states, a physics engine updating the world state, and some support classes interacting
+    with the user or file system.
+    
+res/
+    Contains all assets for the game, such as textures/models etc.
