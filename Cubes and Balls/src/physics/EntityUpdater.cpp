@@ -5,14 +5,11 @@
 using namespace std;
 using namespace glm;
 
-// Time working precision for collisions.
-const float collisionTimePrecision = 0.000001f;
-
 namespace {
 
-vec3 GetLocalSpeedAtCollision(shared_ptr<Entity> e, vec3 collisionPointLocal, vec3 collisionDirectionLocal) {
-	vec3 speed = cross(e->GetRotationSpeed() * e->GetRotationAxis(), collisionPointLocal) + e->GetSpeed();
-	return dot(speed, collisionDirectionLocal) * collisionDirectionLocal;
+vec3 GetLocalSpeedAtCollision(shared_ptr<Entity> e, vec3 collisionPointLocal) {
+	vec3 speed = e->GetRotationSpeed() * cross(e->GetRotationAxis(), collisionPointLocal) + e->GetSpeed();
+	return speed;
 }
 
 } // namespace 
@@ -27,68 +24,35 @@ void EntityUpdater::SetWorldState(shared_ptr<WorldState> world) {
 }
 
 void EntityUpdater::UpdateEntities(float timePassed) {
-	for (shared_ptr<Entity> e : world_->GetEntities()) {
-		UpdateEntity_(e, timePassed);
+	MoveEntities_(timePassed);
+	vector<Collision> collisions = collisionDetector_.LookForCollisions();
+	while (!collisions.empty()) {
+		MoveEntities_(-timePassed);
+		for (const Collision &c : collisions)
+			ApplyForceAtCollision_(c);
+		collisions = collisionDetector_.LookForCollisions();
 	}
 }
 
-void EntityUpdater::UpdateEntity_(shared_ptr<Entity> e, float timePassed) {
-	vec3 speed = e->GetSpeed();
-	vec3 position = e->GetPosition();
-	Collision outputCollision;
-
-	float totalUpdateTime = 0;
-	float updateTimeStep;
-	if (e->GetModel()->minRadius && length(speed) > 0)
-		updateTimeStep = e->GetModel()->minRadius / length(speed);
-	else
-		updateTimeStep = timePassed;
-	while (totalUpdateTime < timePassed) {
-		if (totalUpdateTime + updateTimeStep > timePassed) updateTimeStep = timePassed - totalUpdateTime;
-		totalUpdateTime += updateTimeStep;
-		MoveEntity_(e, updateTimeStep);
-		if (collisionDetector_.IsCollidingQ(e, outputCollision)) {
-			MoveEntity_(e, -updateTimeStep);
-			totalUpdateTime -= updateTimeStep;
-			float timeUntilCollision = MoveEntityToCollisionTime_(e, totalUpdateTime, totalUpdateTime + updateTimeStep, outputCollision);
-			ApplyForceAtCollision_(outputCollision);
-			totalUpdateTime += timeUntilCollision;
-		}
-	}
+void EntityUpdater::MoveEntities_(float timePassed) {
+	for (shared_ptr<Entity> e : world_->GetEntities())
+		MoveEntity_(e, timePassed);
 }
 
 // Updates entity position/rotation, simulating <timePassed> of movement.
 void EntityUpdater::MoveEntity_(shared_ptr<Entity> e, float timePassed) {
 	if (timePassed > 0) {
-		e->SetSpeed(e->GetSpeed() * pow(0.3f, timePassed)); // TODO add friction / air resistance
-		e->SetRotationSpeed(e->GetRotationSpeed()* pow(0.3f, timePassed)); // TODO add friction / air resistance
+		e->SetSpeed(e->GetSpeed() * pow(0.9f, timePassed)); // TODO add friction / air resistance
+		e->SetRotationSpeed(e->GetRotationSpeed()* pow(0.9f, timePassed)); // TODO add friction / air resistance
 		e->SetPosition(e->GetSpeed() * timePassed + e->GetPosition());
 		e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed() * timePassed);
 	}
 	else {
 		e->SetPosition(e->GetSpeed() * timePassed + e->GetPosition());
 		e->Rotate(e->GetRotationAxis(), e->GetRotationSpeed() * timePassed);
-		e->SetSpeed(e->GetSpeed() * pow(0.3f, timePassed)); // TODO add friction / air resistance
-		e->SetRotationSpeed(e->GetRotationSpeed()* pow(0.3f, timePassed)); // TODO add friction / air resistance
+		e->SetSpeed(e->GetSpeed() * pow(0.9f, timePassed)); // TODO add friction / air resistance
+		e->SetRotationSpeed(e->GetRotationSpeed()* pow(0.9f, timePassed)); // TODO add friction / air resistance
 	}
-}
-
-// Moves and entity to the point where it starts colliding with another object.
-// Returns the time at which this happens (in seconds since the last physics tick).
-float EntityUpdater::MoveEntityToCollisionTime_(shared_ptr<Entity> e, float startTime, float endTime, Collision &outputCollision) {
-	while (abs(startTime - endTime) > collisionTimePrecision) {
-		// Binary search the correct time point.
-		float middleTime = (startTime + endTime) / 2;
-		MoveEntity_(e, middleTime - startTime);
-		if (collisionDetector_.IsCollidingQ(e, outputCollision)) {
-			endTime = middleTime;
-			MoveEntity_(e, startTime - middleTime);
-		}
-		else {
-			startTime = middleTime;
-		}
-	}
-	return startTime;
 }
 
 // Handles a collision. Assumes the 2 objects colliding are aligned, then applies forces so they will start moving as
@@ -115,44 +79,39 @@ void EntityUpdater::ApplyForceAtCollision_(const Collision &c) {
 		// since the direction of acceleration depends on the impact direction at the model,
 		// not the way the objects are colliding themselves (this is quite tricky, draw the picture!).
 
-		vec3 firstImpactSpeed = vec3(transformFirst * vec4(
-			GetLocalSpeedAtCollision(firstAsEntity,
-									 positionLocalToFirst,
-									 c.impactDirectionAtFirst), 0)
-		);
-		vec3 secondImpactSpeed = vec3(transformSecond * vec4(
-			GetLocalSpeedAtCollision(secondAsEntity,
-									 positionLocalToSecond,
-									 c.impactDirectionAtSecond), 0)
-		);
+		vec3 firstImpactSpeed = vec3(transformFirst * vec4(GetLocalSpeedAtCollision(firstAsEntity, positionLocalToFirst), 0));
+		vec3 secondImpactSpeed = vec3(transformSecond * vec4(GetLocalSpeedAtCollision(secondAsEntity, positionLocalToSecond), 0));
 		vec3 speedDifference = firstImpactSpeed - secondImpactSpeed;
 
-		float impactSpeed = length(speedDifference);
-		float impact = impactSpeed;
-		forceApplier_->AddForce(firstAsEntity, impact * c.impactDirectionAtFirst, positionLocalToFirst, 0);
-		forceApplier_->AddForce(secondAsEntity, impact * c.impactDirectionAtSecond, positionLocalToSecond, 0);
+		vec3 firstForce = -length(speedDifference) * c.impact;
+		vec3 secondForce = firstForce;
+		forceApplier_->AddForce(firstAsEntity, firstForce, positionLocalToFirst, 0);
+		forceApplier_->AddForce(secondAsEntity, secondForce, positionLocalToSecond, 0);
 	}
 	else {
 		// Make "first" the entity and "second" the object"
-		vec3 impactDirection;
+		vec3 impact = c.impact;
 		if (secondAsEntity) {
 			firstAsEntity = secondAsEntity;
-			impactDirection = c.impactDirectionAtSecond;
-		}
-		else {
-			impactDirection = c.impactDirectionAtFirst;
+			impact *= -1;
 		}
 
 		// Just get the speed of impact and use all that speed to accelerate the entity
 		// since the object is stable anyway.
 		mat4 transformFirst = firstAsEntity->LocalToWorldSpaceMatrix();
+		impact = mat3(inverse(transformFirst)) * impact;
 		vec3 positionLocalToFirst = vec3(inverse(transformFirst) * vec4(c.worldPosition, 1));
-		vec3 impactSpeed = vec3(transformFirst * vec4(
-			GetLocalSpeedAtCollision(firstAsEntity,
-									 positionLocalToFirst,
-									 impactDirection), 0)
-		);
-		float impact = length(impactSpeed) * (firstAsEntity->GetWeight());
-		forceApplier_->AddForce(firstAsEntity, 2 * impact * impactDirection, positionLocalToFirst, 0);
+		vec3 impactSpeed = vec3(transformFirst * vec4(GetLocalSpeedAtCollision(firstAsEntity, positionLocalToFirst), 0));
+		vec3 force = -length(impactSpeed) * impact;
+
+		// TODO create a proper "collisionlistener" interface
+		// then use that to test if an entity has collided and therefor should not be affected by gravity.
+		if (distance(normalize(force), vec3(0, 1, 0)) < 0.1f)
+			firstAsEntity->downCollided = 1;
+		forceApplier_->AddForceLocal(firstAsEntity, force, positionLocalToFirst, 0);
+		// TODO add material speed absorption.
+		if (length(firstAsEntity->GetSpeed()) < 0.01f) firstAsEntity->SetSpeed(vec3(0, 0, 0));
+		if (firstAsEntity->GetRotationSpeed() < 0.01f) firstAsEntity->SetRotationSpeed(0);
+		impactSpeed = vec3(transformFirst * vec4(GetLocalSpeedAtCollision(firstAsEntity, positionLocalToFirst), 0));
 	}
 }

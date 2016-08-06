@@ -18,9 +18,10 @@ public:
 private:
 	void UpdateEntity_(std::shared_ptr<Entity> e, float timePassed);
 
+	void MoveEntities_(float timePassed);
+
 	void MoveEntity_(std::shared_ptr<Entity> e, float timePassed);
 
-	float EntityUpdater::MoveEntityToCollisionTime_(std::shared_ptr<Entity> e, float startTime, float endTime, Collision &outputCollision);
 
 	void ApplyForceAtCollision_(const Collision &c);
 
