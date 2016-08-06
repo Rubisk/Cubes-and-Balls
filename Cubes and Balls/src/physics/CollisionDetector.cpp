@@ -11,18 +11,12 @@
 
 #include "../worldstate/Entity.h"
 
-#include <chrono>
-#include <iostream>
-#include <memory>
-
-#include "glm/gtx/io.hpp"
-
 using namespace std;
 using namespace glm;
 
 namespace {
 
-static const float collisionPrecision = 0.00001f;
+const float COLLISION_PRECISION = 0.00001f;
 
 struct Box {
 	vec3 min;
@@ -61,7 +55,6 @@ vec3 SwapAxi(const vec3 &target, int newZ) {
 // Load 3 vertices from model data representing the face.
 Face GetFacePositionVerticesFromModel(shared_ptr<const Model> model, int faceNumber, const mat4 &transform) {
 	Face face;
-	// TODO introduce proper vertex data size constants etc.
 	int faceIndex = faceNumber * 3;
 
 	int v1Pos = model->elements[faceIndex] * 6;
@@ -79,58 +72,43 @@ Face GetFacePositionVerticesFromModel(shared_ptr<const Model> model, int faceNum
 	return face;
 }
 
-// Loads the normal data from a face of a model.
-vec3 GetFaceNormalFromModel(shared_ptr<const Model> model, int faceNumber) {
-	int faceIndex = faceNumber * 3;
-	int pos = model->elements[faceIndex] * 6 + 3;
-	return vec3(model->vertices[pos], model->vertices[pos + 1], model->vertices[pos + 2]);
-}
-
-// Given a model, and a bool array of the faces colliding, 
-// returns the direction of impact of the collision (inverted interpolation of normals of faces).
-vec3 GetCollisionDirection(shared_ptr<const Model> model, const vector<bool> &faces) {
-	vec3 normalSum;
-	for (int i = 0; i < faces.size(); i++) {
-		if (!faces[i]) continue;
-		vec3 faceNormal = GetFaceNormalFromModel(model, i);
-		normalSum += faceNormal;
-	}
-	return (length(normalSum) > 0.000001f) ? -normalize(normalSum) : vec3(0, 0, 0);
-}
-
 // Returns the intersection point of two lines if it exists.
 // If lines are perpendicular, or don't intersect, returns false. Also returns false if lines overlap somewhere.
 // Returns true if they do intersect, and writes the intersection point to outputIntersection.
-bool GetIntersection(const Line2D &first, const Line2D &second, vec2 &outputIntersection) {
+bool GetIntersection(const Line2D &first, const Line2D &second, vec2 *outputIntersection) {
+	// First check if line "boxes" are even intersecting, otherwise don't bother solving this system.
 	for (int i = 0; i < 2; i++) {
 		if (min(first.p1[i], first.p2[i]) > max(second.p1[i], second.p2[i])) return false;
 		if (min(second.p1[i], second.p2[i]) > max(first.p1[i], first.p2[i])) return false;
 	}
 
+	// TODO try making this faster by not using glm for solving system
 	mat2 system = transpose(
 		mat2{first.p2.x - first.p1.x, second.p1.x - second.p2.x,
-		     first.p2.y - first.p1.y, second.p1.y - second.p2.y});
+		     first.p2.y - first.p1.y, second.p1.y - second.p2.y}
+	);
 	if (determinant(system) == 0) return false; // perpendicular lines
 
 	vec2 solution = inverse(system) * vec2(second.p1.x - first.p1.x, second.p1.y - first.p1.y);
 
 	if (solution[0] < 0 || solution[0] > 1 || solution[1] < 0 || solution[1] > 1) return false; // lines too short to intersect.
-	outputIntersection = (1 - solution[0]) * first.p1 + solution[0] * first.p2;
+	*outputIntersection = (1 - solution[0]) * first.p1 + solution[0] * first.p2;
 	return true;
 };
 
-bool GetLineMinMaxAtPoint(const Line3D &line, vec2 point, float &outputMinZ, float &outputMaxZ) {
+bool GetLineMinMaxAtPoint(const Line3D &line, vec2 point, float *outputMinZ, float *outputMaxZ) {
 	bool sameX = line.p1.x == line.p2.x;
 	bool sameY = line.p1.y == line.p2.y;
 	if (sameX && sameY) {
 		if (line.p1.x == point.x && line.p1.y == point.y) {
-			outputMinZ = min(line.p1.z, line.p2.z);
-			outputMaxZ = max(line.p1.z, line.p2.z);
+			*outputMinZ = min(line.p1.z, line.p2.z);
+			*outputMaxZ = max(line.p1.z, line.p2.z);
 			return true;
 		}
 		return false;
 	}
 	else if (sameX || sameY) {
+		// TODO try making this faster by not using glm for solving system
 		vec2 solution;
 		if (sameX) {
 			if (line.p1.x != point.x) return false;
@@ -150,8 +128,8 @@ bool GetLineMinMaxAtPoint(const Line3D &line, vec2 point, float &outputMinZ, flo
 		}
 		if (solution[0] < 0 || solution[1] < 0) return false;
 		float z = (solution[0] * line.p1 + solution[1] * line.p2).z;
-		outputMinZ = z;
-		outputMaxZ = z;
+		*outputMinZ = z;
+		*outputMaxZ = z;
 		return true;
 	}
 	else {
@@ -163,8 +141,8 @@ bool GetLineMinMaxAtPoint(const Line3D &line, vec2 point, float &outputMinZ, flo
 		if (solution[0] < 0 || solution[1] < 0) return false;
 		vec3 lineAtPoint = solution[0] * line.p1 + solution[1] * line.p2;
 		if (abs(lineAtPoint.x - point.x) > 0.00001f) return false;
-		outputMinZ = lineAtPoint.z;
-		outputMaxZ = lineAtPoint.z;
+		*outputMinZ = lineAtPoint.z;
+		*outputMaxZ = lineAtPoint.z;
 		return true;
 	}
 }
@@ -172,9 +150,11 @@ bool GetLineMinMaxAtPoint(const Line3D &line, vec2 point, float &outputMinZ, flo
 // Given a point in 2d and a face, finds the minimum/maximum Z value of the face at that (x, y)
 // point. Returns false if the face has no point with that (x, y) value, and true otherwise.
 // Sets outputMinZ to the minimum face value and sets outputMaxZ with the maximum face value.
-bool GetFaceMinMaxAtPoint(const Face &face, vec2 point, float &outputMinZ, float &outputMaxZ) {
+bool GetFaceMinMaxAtPoint(const Face &face, vec2 point, float *outputMinZ, float *outputMaxZ) {
 	// We know that any point in the face can be written as a*v1 + b*v2 + c*v3, with a + b + c = 1.
 	// This gives us a set of linear equations we can solve.
+
+	// TODO try making this faster by not using glm for solving system
 	mat3 system = transpose(mat3{1,         1,         1,
 								 face.p1.x, face.p2.x, face.p3.x,
 								 face.p1.y, face.p2.y, face.p3.y}
@@ -197,26 +177,25 @@ bool GetFaceMinMaxAtPoint(const Face &face, vec2 point, float &outputMinZ, float
 		Line3D line;
 		line.p1 = face.p1;
 		line.p2 = face.p2;
-		if (GetLineMinMaxAtPoint(line, point, minZ, maxZ)) {
-			if (!success || minZ < outputMinZ) outputMinZ = minZ;
-			if (!success || maxZ > outputMaxZ) outputMaxZ = maxZ;
+		if (GetLineMinMaxAtPoint(line, point, &minZ, &maxZ)) {
+			if (!success || minZ < *outputMinZ) *outputMinZ = minZ;
+			if (!success || maxZ > *outputMaxZ) *outputMaxZ = maxZ;
 			success = true;
 		}
 		line.p1 = face.p3;
 
-		if (GetLineMinMaxAtPoint(line, point, minZ, maxZ)) {
-			if (!success || minZ < outputMinZ) outputMinZ = minZ;
-			if (!success || maxZ > outputMaxZ) outputMaxZ = maxZ;
+		if (GetLineMinMaxAtPoint(line, point, &minZ, &maxZ)) {
+			if (!success || minZ < *outputMinZ) *outputMinZ = minZ;
+			if (!success || maxZ > *outputMaxZ) *outputMaxZ = maxZ;
 			success = true;
 		}
 		line.p2 = face.p1;
-		if (GetLineMinMaxAtPoint(line, point, minZ, maxZ)) {
-			if (!success || minZ < outputMinZ) outputMinZ = minZ;
-			if (!success || maxZ > outputMaxZ) outputMaxZ = maxZ;
+		if (GetLineMinMaxAtPoint(line, point, &minZ, &maxZ)) {
+			if (!success || minZ < *outputMinZ) *outputMinZ = minZ;
+			if (!success || maxZ > *outputMaxZ) *outputMaxZ = maxZ;
 			success = true;
 		}		
-		if (!success) return false;
-		return true;
+		return success;
 	}
 }
 
@@ -224,9 +203,9 @@ bool GetFaceMinMaxAtPoint(const Face &face, vec2 point, float &outputMinZ, float
 // then acts like GetValueAtPoint. Returns false if there is no intersection.
 bool GetFaceMinMaxAtIntersection(const Face &face,
 								 const Line2D &first, const Line2D &second,
-								 float &outputMinZ, float &outputMaxZ) {
+								 float *outputMinZ, float *outputMaxZ) {
 	vec2 intersection;
-	if (!GetIntersection(first, second, intersection)) return false;
+	if (!GetIntersection(first, second, &intersection)) return false;
 	return GetFaceMinMaxAtPoint(face, intersection, outputMinZ, outputMaxZ);
 }
 
@@ -266,7 +245,7 @@ bool ExpandBoxAroundFace(const Face &face, const Box &bounds, Box &boxToExpand) 
 		// Box corners.
 		for (float x : {boxMin.x, boxMax.x}) {
 			for (float y : {boxMin.y, boxMax.y}) {
-				if (GetFaceMinMaxAtPoint(swappedFace, vec2(x, y), outputMinZ, outputMaxZ)) {
+				if (GetFaceMinMaxAtPoint(swappedFace, vec2(x, y), &outputMinZ, &outputMaxZ)) {
 					inBox[axis] = true;
 					if (outputMinZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputMinZ;
 					if (outputMaxZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputMaxZ;
@@ -286,7 +265,7 @@ bool ExpandBoxAroundFace(const Face &face, const Box &bounds, Box &boxToExpand) 
 					for (vec2 secondEnd : {vec2(boxMin.x, boxMax.y), vec2(boxMax.x, boxMin.y)}) {
 						second.p1 = secondStart;
 						second.p2 = secondEnd;
-						if (GetFaceMinMaxAtIntersection(swappedFace, first, second, outputMinZ, outputMaxZ)) {
+						if (GetFaceMinMaxAtIntersection(swappedFace, first, second, &outputMinZ, &outputMaxZ)) {
 							inBox[axis] = true;
 							if (outputMinZ < boxToExpand.min[axis]) boxToExpand.min[axis] = outputMinZ;
 							if (outputMaxZ > boxToExpand.max[axis]) boxToExpand.max[axis] = outputMaxZ;
@@ -364,20 +343,20 @@ bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> 
 			newBox.max[i] = min(box.max[i], min(firstBox.max[i], secondBox.max[i]));
 		}
 
-		if (distance(newBox.min, box.min) < collisionPrecision && distance(newBox.max, box.max) < collisionPrecision) {
+		if (distance(newBox.min, box.min) < COLLISION_PRECISION && distance(newBox.max, box.max) < COLLISION_PRECISION) {
 			outputCollission.first = first;
 			outputCollission.second = second;
 			outputCollission.worldPosition = 0.5f * (box.min + box.max);
-			vec3 boxSize;
-			for (int i = 0; i < 3; i++) boxSize[i] = box.max[i] - box.min[i];
+			vec3 boxSize = box.max - box.min;
+
 			vec3 impact;
 			impact.x = boxSize.y * boxSize.z;
 			impact.y = boxSize.x * boxSize.z;
 			impact.z = boxSize.x * boxSize.y;
 			if (impact == vec3(0, 0, 0)) return false;
 			impact = normalize(impact);
-			for (int i = 0; i < 3; i++) 
-				if (first->GetPosition()[i] > second->GetPosition()[i]) 
+			for (int i = 0; i < 3; i++)
+				if (first->GetPosition()[i] > second->GetPosition()[i])
 					impact[i] *= -1;
 			outputCollission.impact = impact;
 			return true;
