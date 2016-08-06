@@ -164,8 +164,8 @@ bool GetFaceMinMaxAtPoint(const Face &face, vec2 point, float *outputMinZ, float
 		vec3 solution = inverse(system) * vec3(1, point.x, point.y);
 		if (solution.x < 0 || solution.y < 0 || solution.z < 0) return false; // Make sure it's in the convex plane
 		float z = (solution[0] * face.p1 + solution[1] * face.p2 + solution[2] * face.p3).z;
-		outputMinZ = z;
-		outputMaxZ = z;
+		*outputMinZ = z;
+		*outputMaxZ = z;
 		return true;
 	}
 	else {
@@ -284,12 +284,21 @@ void CollisionDetector::SetWorldState(shared_ptr<WorldState> world) {
 	world_ = world;
 }
 
-bool CollisionDetector::IsCollidingQ(std::shared_ptr<Object> toTest, Collision &outputCollission) {
+vector<Collision> CollisionDetector::LookForCollisions() {
+	vector<Collision> collisions;
+	Collision outputCollision;
+	for (shared_ptr<Entity> e : world_->GetEntities()) {
+		if (IsCollidingQ_(e, outputCollision)) collisions.push_back(Collision(outputCollision));
+	}
+	return collisions;
+}
+
+bool CollisionDetector::IsCollidingQ_(std::shared_ptr<Object> toTest, Collision &outputCollission) {
 	if (world_ == nullptr) return false;
 	Collision outputCollission_;
 	for (shared_ptr<Object> object : world_->GetObjectsInSphere(toTest->GetPosition(), toTest->GetModel()->maxRadius)) {
 		if (object == toTest) continue;
-		if (CollidingQ(object, toTest, outputCollission_)) {
+		if (CollidingQ_(object, toTest, outputCollission_)) {
 			outputCollission = outputCollission_;
 			return true;
 		}
@@ -297,7 +306,7 @@ bool CollisionDetector::IsCollidingQ(std::shared_ptr<Object> toTest, Collision &
 	return false;
 }
 
-bool CollisionDetector::CollidingQ(shared_ptr<Object> first, shared_ptr<Object> second, Collision &outputCollission) {
+bool CollisionDetector::CollidingQ_(shared_ptr<Object> first, shared_ptr<Object> second, Collision &outputCollission) {
 	shared_ptr<const Model> firstModel = first->GetModel();
 	shared_ptr<const Model> secondModel = second->GetModel();
 	shared_ptr<Entity> firstE = dynamic_pointer_cast<Entity>(first);
