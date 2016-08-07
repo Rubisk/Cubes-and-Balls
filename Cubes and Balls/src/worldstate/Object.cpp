@@ -5,7 +5,7 @@
 using namespace std;
 using namespace glm;
 
-Object::Object(const Object &toCopy) 
+Object::Object(const Object &toCopy)
 	: Orientation(toCopy) {
 	SetPosition(toCopy.GetPosition());
 }
@@ -45,7 +45,14 @@ mat4 Object::LocalToWorldSpaceMatrix() const {
 				vec4(GetPosition(), 1));
 }
 
-
-Object::~Object() {
+glm::vec3 Object::ToLocalSpace(const glm::vec3 &worldSpacePosition, bool shouldTranslate) const {
+	vec4 pos = vec4(worldSpacePosition, (shouldTranslate ? 1 : 0));
+	return vec3(inverse(LocalToWorldSpaceMatrix()) * pos);
 }
 
+glm::vec3 Object::ToWorldSpace(const glm::vec3 &localSpacePosition, bool shouldTranslate) const {
+	vec4 pos = vec4(localSpacePosition, (shouldTranslate ? 1 : 0));
+	return vec3(LocalToWorldSpaceMatrix() * pos);
+}
+
+Object::~Object() {}

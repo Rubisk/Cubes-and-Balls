@@ -33,6 +33,10 @@ public:
 
 	glm::mat4 LocalToWorldSpaceMatrix() const;
 
+	glm::vec3 ToLocalSpace(const glm::vec3 &worldSpacePosition, bool shouldTranslate) const;
+
+	glm::vec3 ToWorldSpace(const glm::vec3 &localSpacePosition, bool shouldTranslate) const;
+
 	virtual ~Object();
 private:
 	mutable std::mutex positionmtx_;
