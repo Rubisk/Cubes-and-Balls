@@ -16,14 +16,17 @@ public:
 
 	void UpdateEntities(float timePassed);
 private:
-	void UpdateEntity_(std::shared_ptr<Entity> e, float timePassed);
-
 	void MoveEntities_(float timePassed);
 
 	void MoveEntity_(std::shared_ptr<Entity> e, float timePassed);
 
-
 	void ApplyForceAtCollision_(const Collision &c);
+
+	void ApplyForceAtObjectEntityCollision_(std::shared_ptr<Object> object, std::shared_ptr<Entity> entity,
+											const glm::vec3 &positionOfCollision, const glm::vec3 &collisionImpact);
+
+	void ApplyForceAtEntityEntityCollision_(std::shared_ptr<Entity> first, std::shared_ptr<Entity> second,
+											const glm::vec3 &positionOfCollision, const glm::vec3 &collisionImpact);
 
 	CollisionDetector collisionDetector_;
 	std::shared_ptr<ForceApplier> forceApplier_;
