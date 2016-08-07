@@ -13,15 +13,15 @@
 class ForceApplier {
 public:
 	struct Force {
-		Force(std::shared_ptr<Entity> e, 
-			  glm::vec3 &forceVec, 
-			  glm::vec3 &localPosition, 
+		Force(std::shared_ptr<Entity> e,
+			  const glm::vec3 &forceVec,
+			  const glm::vec3 &position,
 			  float duration) :
-			e(e), forceVec(forceVec), localPosition(localPosition), duration(duration) {};
+			e(e), forceVec(forceVec), position(position), duration(duration) {};
 
 		std::shared_ptr<Entity> e;
 		glm::vec3 forceVec;
-		glm::vec3 localPosition;
+		glm::vec3 position;
 
 		// Duration to apply the force. If this is 0, the force is considered to be applied during an "infinitisemal"
 		// amount of time, with total energy as if the duration was 1 second. (u physics people said it was ok)
@@ -29,15 +29,15 @@ public:
 	};
 
 	void AddForce(std::shared_ptr<Entity> e,
-				  glm::vec3 &forceVec,
-				  glm::vec3 &localPosition,
+				  const glm::vec3 &forceVec,
+				  const glm::vec3 &localPosition,
 				  float duration);
 
 	void AddForce(Force &f);
 
 	void AddForceLocal(std::shared_ptr<Entity> e,
-					   glm::vec3 &forceVec,
-					   glm::vec3 &localPosition,
+					   const glm::vec3 &forceVec,
+					   const glm::vec3 &localPosition,
 					   float duration);
 
 	void AddForceLocal(Force &f);
